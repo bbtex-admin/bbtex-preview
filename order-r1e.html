@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BBTEX 订单平台 · R1E 样张（R1D 定稿 · 字号收紧 · 概览可收起）</title><link rel="icon" href="data:,">
+<style>
+/* BBTEX 侧栏样张 R1/R2 共用：1px 细线 · 8px 间距 · 黄金比例 */
+:root{
+  --ink:#0B0F17; --text:#1F2937; --muted:#6B7280; --faint:#9CA3AF;
+  --bg:#FFFFFF; --bg2:#F7F8FA;
+  --line:#E3E6EB;          /* 内部分隔线：行线、格线（全站唯一） */
+  --frame:#C5CBD4;         /* 外框：节点框、表格外框、面板边界（全站唯一） */
+  --blue:#1E4FD8; --blue-d:#0A2A6B; --blue-l:#EEF3FF; --blue-m:#C9D7FB;
+  --orange:#F97316; --yellow:#EAB308; --red:#DC2626;
+  --s1:8px; --s2:16px; --s3:24px; --s4:32px; --s5:40px; --s6:48px;
+  --r:4px;
+  font-family:"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-size:13px;line-height:20px;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;overflow:hidden}
+.num,.cn{font-variant-numeric:tabular-nums}
+.cn{font-weight:600;color:var(--ink);letter-spacing:.02em}
+.muted{color:var(--muted)} .faint{color:var(--faint)}
+button{font:inherit;cursor:pointer}
+.btn{height:32px;padding:0 var(--s2);border:1px solid var(--frame);background:#fff;color:var(--text);border-radius:var(--r);display:inline-flex;align-items:center;gap:var(--s1);white-space:nowrap}
+.btn:hover{border-color:var(--muted)}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.pri:hover{background:var(--blue-d);border-color:var(--blue-d)}
+.btn.sm{height:24px;padding:0 var(--s1);font-size:12px}
+/* 点缀：只用小圆点 */
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;flex:none}
+.dot.o{background:var(--orange)} .dot.y{background:var(--yellow)} .dot.r{background:var(--red)} .dot.b{background:var(--blue)} .dot.g{background:var(--faint)}
+.st{display:inline-flex;align-items:center;gap:var(--s1);white-space:nowrap}
+/* AI 标记：蓝色描边小方标 */
+.ai{display:inline-flex;align-items:center;justify-content:center;height:16px;padding:0 4px;border:1px solid var(--blue);color:var(--blue);border-radius:2px;font-size:10px;line-height:14px;font-weight:700;letter-spacing:.04em;flex:none}
+.ai.fill{background:var(--blue);color:#fff}
+/* 状态 tab（易仓/领星惯例：名称 + 括号数量） */
+.tabs{display:flex;gap:var(--s3);height:40px;border-bottom:1px solid var(--line);padding:0 var(--s3)}
+.tab{display:flex;align-items:center;gap:4px;height:40px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;white-space:nowrap}
+.tab b{font-weight:400;font-variant-numeric:tabular-nums}
+.tab.on{color:var(--ink);font-weight:600;border-bottom-color:var(--blue)}
+.tab.on b{color:var(--blue);font-weight:600}
+/* 账本式键值行（QuickBooks）：标签 38.2% / 值 61.8% */
+.kv{border-top:1px solid var(--line)}
+.kv .row{display:grid;grid-template-columns:38.2fr 61.8fr;height:40px;align-items:center;border-bottom:1px solid var(--line)}
+.kv .row>span:first-child{color:var(--muted)}
+.kv .row>span:last-child{display:flex;align-items:center;gap:var(--s1);color:var(--ink);min-width:0}
+.kv .row .v{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kv .row .v.aiv{color:var(--blue-d);font-weight:600}
+.kv .row .old{color:var(--faint);text-decoration:line-through;font-weight:400}
+
+/* ============ Excel 式表格 ============ */
+.xg{display:flex;flex-direction:column;border:1px solid var(--frame);border-radius:var(--r);background:#fff;min-height:0;overflow:hidden}
+.xg-bar{height:48px;flex:none;display:flex;align-items:center;gap:var(--s2);padding:0 var(--s2);border-bottom:1px solid var(--frame)}
+.xg-bar .t{font-size:14px;font-weight:600;color:var(--ink)}
+.xg-bar .sp{flex:1}
+.xg-wrap{flex:1;overflow:auto;min-height:0;position:relative}
+.xg table{border-collapse:separate;border-spacing:0;table-layout:fixed}
+.xg th,.xg td{height:40px;padding:0 12px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;position:relative}
+.xg th:last-child,.xg td:last-child{border-right:none}
+.xg thead th{position:sticky;top:0;z-index:2;background:var(--bg2);font-weight:600;color:var(--text);border-bottom-color:var(--frame);user-select:none}
+.xg th.num,.xg td.num{text-align:right}
+.xg .frz{position:sticky;left:0;z-index:1;background:#fff;border-right-color:var(--frame)}
+.xg thead th.frz{z-index:3;background:var(--bg2)}
+.xg tbody tr:hover td{background:#FAFBFC}
+.xg tbody tr.sel td{background:var(--blue-l)}
+.xg tbody tr.sel td.frz{box-shadow:inset 2px 0 0 var(--blue)}
+.xg td.aic::before{content:"";position:absolute;left:0;top:0;border-top:7px solid var(--blue);border-right:7px solid transparent}
+.xg td.aic{color:var(--blue-d)}
+.xg td[contenteditable="true"]{outline:1px solid var(--blue);outline-offset:-1px;background:#fff;text-overflow:clip}
+.xg .rz{position:absolute;top:0;right:0;width:8px;height:100%;cursor:col-resize;z-index:4}
+.xg .rz:hover,.xg .rz.on{background:linear-gradient(var(--blue),var(--blue)) right/1px 100% no-repeat}
+.xg-foot{height:40px;flex:none;display:flex;align-items:center;gap:var(--s2);padding:0 var(--s2);border-top:1px solid var(--frame);font-size:12px;color:var(--muted)}
+.xg-foot .legend{display:inline-flex;align-items:center;gap:var(--s1)}
+.xg-foot .tri{width:0;height:0;border-top:7px solid var(--blue);border-right:7px solid transparent}
+.phi.on{border-color:var(--blue);color:var(--blue)}
+i.ai,i.dot,i.tri{font-style:normal}
+.st{vertical-align:middle;line-height:20px}
+.kv .row .ai{margin-left:auto}
+.xg td .st{display:flex;align-items:center;height:39px}
+
+/* ===== D 版装饰层：沿用 news-v3（蓝渐变带 / 3px 黑→蓝顶条 / 蓝渐变图标方块 / 柔和蓝影 / 点阵底 / 菱形分隔） ===== */
+:root{--blue:#1F5FD6;--blue-d:#0E3A8A;--blue-l:#EEF3FC;--blue-m:#C9D7F3;--line:#E6EAF0;--frame:#D3DAE5;--orange:#F2711C;--yellow:#E0A800;--red:#E5484D;
+ --sh:0 1px 0 #fff inset,0 12px 28px -18px rgba(31,95,214,.30);--sh2:0 4px 10px -4px rgba(31,95,214,.55)}
+body{background:#F4F6FA radial-gradient(#DCE3EF 1px,transparent 1px) 0 0/18px 18px;position:relative}
+body::before{content:"";position:fixed;left:0;right:0;top:0;height:3px;z-index:50;background:linear-gradient(90deg,#0E1116 0,#1F5FD6 38.2%,#7FA6EA 80%,#F5B700 100%)}
+/* 顶部应用带 */
+.top{height:56px;position:relative;overflow:hidden;display:flex;align-items:center;gap:16px;padding:3px 24px 0 16px;background:linear-gradient(100deg,#EAF1FD 0,#F6F9FE 55%,#fff 100%);border-bottom:1px solid #DCE4F2}
+.top>*{position:relative;z-index:1}.top .wm{position:absolute;left:180px;top:0;width:700px;height:100%;z-index:0;opacity:.5}
+.brandm{display:flex;align-items:center;gap:8px;flex:none}
+.lm{width:32px;height:32px;border-radius:7px;background:linear-gradient(135deg,#1F5FD6,#0E1116);display:grid;place-items:center;box-shadow:var(--sh2)}
+.bn{font-weight:800;letter-spacing:.06em;color:var(--ink);font-size:13px}
+.vs{width:1px;height:16px;background:#C9D3E3}
+.brandm h1{font-size:16px;font-weight:700;color:var(--ink);letter-spacing:.08em}
+.bc{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.bc b{color:var(--ink);font-weight:600}.bc s{text-decoration:none;color:#B4BDCB}
+.cap{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px 0 0;border:1px solid #C9D7F3;background:rgba(255,255,255,.85);border-radius:12px;font-size:12px;color:var(--blue-d);white-space:nowrap;overflow:hidden}
+.cap i{font-style:normal;height:24px;display:flex;align-items:center;padding:0 8px;background:linear-gradient(135deg,#1F5FD6,#0E3A8A);color:#fff;font-weight:700;letter-spacing:.04em;font-size:11px}
+.tr{margin-left:auto;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.tsearch{width:208px;height:32px;border:1px solid #D3DCEB;background:#fff;border-radius:6px;display:flex;align-items:center;gap:6px;padding:0 8px;color:var(--faint);font-size:12px}
+.tsearch kbd{margin-left:auto;font:11px/16px inherit;border:1px solid var(--line);border-radius:3px;padding:0 4px;color:var(--muted);background:var(--bg2)}
+.tb{height:32px;display:inline-flex;align-items:center;gap:4px;padding:0 8px;border-radius:6px;color:var(--text);font-size:12px}
+.tb.ic{width:32px;justify-content:center;padding:0;color:var(--muted)}
+.tb.co{border:1px solid #C9D7F3;background:var(--blue-l);color:var(--blue-d);height:28px;border-radius:14px}
+.tb.bell{position:relative}.tb.bell i{position:absolute;top:6px;right:7px;width:6px;height:6px;border-radius:50%;background:var(--red);box-shadow:0 0 0 2px #fff}
+.me2{display:flex;align-items:center;gap:8px;padding-left:8px;margin-left:4px;border-left:1px solid #DCE4F2}
+.me2 span{display:flex;flex-direction:column;line-height:15px}.me2 b{font-size:12px;color:var(--ink)}.me2 small{font-size:11px;color:var(--muted)}
+/* 头像 */
+.av{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;font-style:normal;font-size:11px;font-weight:700;color:#fff;flex:none;box-shadow:0 0 0 2px #fff}
+.av.a1{background:linear-gradient(135deg,#1F5FD6,#0E3A8A)}.av.a2{background:linear-gradient(135deg,#3B4252,#0E1116)}.av.a3{background:linear-gradient(135deg,#7FA6EA,#1F5FD6)}.av.a4{background:linear-gradient(135deg,#F2711C,#C2410C)}
+.avc{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 8px 0 1px;border-radius:12px;background:#F3F5F9;font-size:12px;color:var(--text);white-space:nowrap}
+/* 蓝渐变图标方块 */
+.isq{width:28px;height:28px;border-radius:7px;display:grid;place-items:center;color:#fff;flex:none;background:linear-gradient(135deg,#1F5FD6,#0E3A8A);box-shadow:var(--sh2)}
+.isq.sm{width:22px;height:22px;border-radius:6px}.isq.xs{width:20px;height:20px;border-radius:5px}
+.isq.k{background:linear-gradient(135deg,#3B4252,#0E1116);box-shadow:0 4px 10px -4px rgba(14,17,22,.5)}
+.isq.l{background:linear-gradient(135deg,#7FA6EA,#1F5FD6)}
+.isq.n{background:linear-gradient(135deg,#2D6BE0,#0A2A6B)}
+.isq.o{background:linear-gradient(135deg,#FB923C,#F2711C);box-shadow:0 4px 10px -4px rgba(242,113,28,.55)}
+.isq.r{background:linear-gradient(135deg,#F87171,#E5484D);box-shadow:0 4px 10px -4px rgba(229,72,77,.55)}
+.isq.y{background:linear-gradient(135deg,#FACC15,#E0A800);box-shadow:0 4px 10px -4px rgba(224,168,0,.55)}
+.isq.g{background:#EEF1F6;color:var(--muted);box-shadow:none}
+/* 卡片 */
+.card{background:#fff;border:1px solid #E3E7EE;border-radius:8px;box-shadow:var(--sh)}
+/* 状态胶囊：浅色底 */
+.pill{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:11px;font-size:12px;line-height:20px;font-weight:600;white-space:nowrap;border:1px solid transparent}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.o{background:#FFF1E7;color:#C2560F;border-color:#FAD5BB}.pill.r{background:#FDECEC;color:#C5282E;border-color:#F7C5C7}
+.pill.y{background:#FDF6DC;color:#9A7400;border-color:#F1E0A0}.pill.b{background:var(--blue-l);color:var(--blue);border-color:var(--blue-m)}
+.pill.g{background:#F2F4F7;color:#6B7280;border-color:#E3E7EE}.pill.rr{background:#fff;color:var(--red);border-color:#F2A3A6}.pill.rr::before{border-radius:1px;transform:rotate(45deg)}
+.pill b{font-size:10px;font-weight:800;letter-spacing:.04em}.pill.b::before{display:none}
+/* AI 徽标（精修） */
+.ai{height:16px;border:none;padding:0 5px;border-radius:4px;background:linear-gradient(135deg,#1F5FD6,#0E3A8A);color:#fff;font-size:10px;box-shadow:0 2px 6px -2px rgba(31,95,214,.6)}
+.ai::before{content:"✦";font-size:8px;margin-right:2px;color:#F5B700}
+.ai.o{background:#fff;color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue-m)}
+/* 节点进度条 */
+.prog{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+.prog i{width:14px;height:6px;border-radius:2px;background:#E6EAF0;font-style:normal}
+.prog i.d{background:var(--blue)}.prog i.c{background:var(--orange)}.prog i.r{background:var(--red)}.prog i.y{background:var(--yellow)}
+.prog em{font-style:normal;margin-left:6px;font-size:12px;color:var(--text)}
+.cnc{display:flex;align-items:center;gap:8px}.cnc input,.hc{width:14px;height:14px;accent-color:var(--blue);margin:0;vertical-align:-2px}
+.lk{color:var(--red);display:inline-flex}
+.ins{display:inline-block;height:20px;line-height:18px;padding:0 6px;border:1px solid var(--frame);border-radius:3px;font-size:12px;color:var(--muted)}.ins.b{border-color:var(--blue-m);color:var(--blue);background:var(--blue-l)}.ins.f{color:var(--faint);border-style:dashed}
+.act{display:inline-flex;align-items:center;gap:8px}.act a{color:var(--blue);cursor:pointer}.act .qi{width:22px;height:22px;display:grid;place-items:center;border-radius:4px;background:var(--blue-l);color:var(--blue)}
+.lfd.r{color:var(--red);font-weight:700}.lfd.o{color:#C2560F;font-weight:600}
+.cf{display:inline-flex;align-items:center;gap:6px;justify-content:flex-end}.cf i{height:4px;border-radius:2px;opacity:.75}
+/* 表格精修 */
+.xg{border-color:#E3E7EE;border-radius:8px;box-shadow:var(--sh)}
+.xg-bar{border-bottom-color:var(--line);background:linear-gradient(180deg,#fff,#FAFCFF)}
+.xg thead th{background:#F5F8FD;border-bottom-color:var(--frame);font-size:12px;color:#374151}
+.xg thead th.frz{background:#F5F8FD}
+.xg th .fl{display:inline-flex;margin-left:4px;color:#B4BDCB;vertical-align:-1px}
+.xg th.num .fl{margin-left:4px}
+.xg tbody tr.sel td{background:#EEF3FC}
+.xg tbody tr.chk td{background:#F7FAFF}.xg tbody tr.chk.sel td{background:#EEF3FC}
+.xg tbody tr.hold td.frz{box-shadow:inset 2px 0 0 var(--red)}
+.xg td.aic::before{border-top-color:var(--blue)}
+.xg-foot{border-top-color:var(--line);background:#FAFCFF}
+.xg-wrap::after{content:"";position:sticky;float:right;right:0;top:0;width:24px;height:100%;margin-top:-100%;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(31,95,214,.08));pointer-events:none}
+.pager{margin-left:auto;display:flex;align-items:center;gap:4px;font-variant-numeric:tabular-nums}
+.pager b{font-weight:400;color:var(--text);margin-right:4px}.pager span{min-width:24px;height:24px;display:grid;place-items:center;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--text)}
+.pager span.on{border-color:var(--blue);color:var(--blue);font-weight:600}.pager span.w{padding:0 6px}
+.bulk{height:40px;flex:none;display:flex;align-items:center;gap:8px;padding:0 16px;background:linear-gradient(90deg,#EEF3FC,#F8FAFE);border-bottom:1px solid var(--blue-m);font-size:12px;color:var(--blue-d);white-space:nowrap}
+.bulk b{font-variant-numeric:tabular-nums}.bulk .btn{height:26px;padding:0 10px;font-size:12px;gap:4px;border-color:#C9D7F3;color:var(--blue-d)}.bulk .btn.pri{color:#fff;border-color:var(--blue)}
+.bulk .sp2{flex:1}
+.fbar{height:44px;flex:none;display:flex;align-items:center;gap:6px;padding:0 16px;border-bottom:1px solid var(--line);font-size:12px;white-space:nowrap;overflow:hidden}
+.fbar .lb{color:var(--muted);margin-right:2px}
+.chip{height:24px;display:inline-flex;align-items:center;gap:4px;padding:0 8px;border:1px solid var(--line);border-radius:12px;color:var(--text);background:#fff}
+.chip b{font-weight:600;font-variant-numeric:tabular-nums;color:var(--blue)}.chip.on{border-color:var(--blue);background:var(--blue-l);color:var(--blue-d)}
+.chip.o b{color:#C2560F}.chip.r b{color:var(--red)}
+.btn{border-color:#D3DAE5;border-radius:6px}.btn svg{color:var(--blue)}.btn.pri{background:linear-gradient(135deg,#1F5FD6,#0E3A8A);border-color:#1F5FD6;box-shadow:var(--sh2)}.btn.pri svg{color:#fff}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn .bd{min-width:18px;height:16px;border-radius:8px;background:var(--orange);color:#fff;font-size:10px;line-height:16px;text-align:center;padding:0 4px;font-weight:700}
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;flex:none}
+.kpi{height:72px;padding:12px 14px;display:grid;grid-template-columns:28px 1fr 60px;grid-template-rows:20px 28px;column-gap:10px;align-items:center;position:relative;overflow:hidden}
+.kpi .isq{grid-row:1/3}
+.kpi .kl{font-size:12px;color:var(--muted);white-space:nowrap}
+.kpi .kv2{font-size:22px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;line-height:28px;display:flex;align-items:baseline;gap:6px}
+.kpi .kv2 small{font-size:11px;font-weight:600;color:var(--muted)}.kpi .kv2 small.up{color:#16803C}.kpi .kv2 small.dn{color:var(--red)}
+.kpi svg.spk{grid-row:1/3;grid-column:3;width:60px;height:32px}
+.kpi::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--kc,var(--blue))}
+/* 菱形分隔 */
+.dia{position:relative;height:1px;background:var(--line)}.dia::after{content:"";position:absolute;left:50%;top:-4px;width:7px;height:7px;background:#fff;border:1px solid #DCE4F2;transform:translateX(-50%) rotate(45deg)}
+.sec2{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--faint);letter-spacing:.04em}
+.sec2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+.tsearch span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+
+</style>
+</head><body>
+<header class="top">
+ <svg class="wm" viewBox="0 0 520 56" preserveAspectRatio="none"><g fill="none"><path d="M8 40 C110 34 170 14 260 20 S400 44 512 30" stroke="#1F5FD6" stroke-dasharray="2 4" opacity=".5"/><path d="M262 2 L270 54" stroke="#9DB6E6" stroke-dasharray="1 3" opacity=".6"/></g><circle cx="8" cy="40" r="3" fill="#1F5FD6"/><circle cx="260" cy="20" r="3.5" fill="#fff" stroke="#F2711C"/><circle cx="512" cy="30" r="3" fill="#0E1116"/></svg>
+ <div class="brandm"><span class="lm"><svg viewBox="0 0 20 20" width="18" height="18"><path d="M3 13.5h14l-2 3.5H5z" fill="#fff"/><rect x="5" y="7" width="4.5" height="5" rx=".6" fill="#fff" opacity=".85"/><rect x="10.5" y="4.5" width="4.5" height="7.5" rx=".6" fill="#F5B700"/></svg></span><span class="bn">BBTEX</span><span class="vs"></span><h1>订单平台</h1></div>
+ <nav class="bc"><s>/</s>订单管理<s>/</s><b>柜号详情</b></nav>
+ <span class="cap" data-chk="caption"><i>R1E 样张</i><span class="hsc">订单管理 · 柜号详情页（左：我的待办　右：选中柜 + 全部订单）</span><span class="wsc">订单管理 · 柜号详情页 · 34 寸带鱼屏版（左：我的待办　中：选中柜 + 全部订单 16 列　右：AI 助手常驻）</span></span>
+ <div class="tr">
+  <span class="tsearch"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="9" cy="9" r="5"/><path d="M13 13l4 4"/></svg><span>搜柜号 / 提单 / 订单</span><kbd>/</kbd></span>
+  <span class="tb ic" title="语言：中文"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="10" cy="10" r="7"/><path d="M3 10h14M10 3c2 2 2.8 4.5 2.8 7s-.8 5-2.8 7c-2-2-2.8-4.5-2.8-7s.8-5 2.8-7z"/></svg></span>
+  <span class="tb co">总公司·BBTEX ▾</span>
+  <span class="tb ic" title="最近打开"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v4.5l3 1.5"/></svg></span>
+  <span class="tb ic" title="帮助文档"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="10" cy="10" r="7"/><path d="M8 8a2 2 0 113 1.7c-.7.4-1 .8-1 1.6M10 14h.01"/></svg></span>
+  <span class="tb ic bell" title="通知"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M5 13.5V9a5 5 0 0110 0v4.5l1.5 1.5h-13z"/><path d="M8.5 17h3"/></svg><i></i></span>
+  <span class="me2"><i class="av a1">夏</i><span><b>夏玮</b><small>客服 · LA 14:40 PT</small></span></span>
+ </div>
+</header>
+
+<style>
+.app{display:grid;grid-template-columns:72px 440px 928px;height:844px}
+
+.top .tsearch{width:120px}.top .tsearch span{overflow:hidden;text-overflow:ellipsis}
+/* 图标栏 */
+.rail{background:linear-gradient(180deg,#0E1116,#111A2E);display:flex;flex-direction:column;align-items:center;padding:8px 0;gap:2px}
+.ri{width:60px;height:50px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#9AA3B2;font-size:11px;line-height:14px;cursor:pointer;position:relative;flex:none}
+.ri .g{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;background:rgba(255,255,255,.06);color:var(--c,#9DB6E6)}
+.ri.on{background:rgba(31,95,214,.22);color:#fff;box-shadow:inset 3px 0 0 #3B82F6}
+.ri.on .g{background:linear-gradient(135deg,#1F5FD6,#0E3A8A);color:#fff;box-shadow:0 4px 10px -3px rgba(31,95,214,.8)}
+.ri .n{position:absolute;top:4px;right:12px;min-width:8px;height:8px;border-radius:4px;background:var(--orange);box-shadow:0 0 0 2px #0E1116;font-style:normal}
+.ri .n.r{background:var(--red)}.ri .n.c{height:14px;min-width:14px;border-radius:7px;font-size:9px;line-height:14px;color:#fff;text-align:center;top:2px;right:10px}
+.rsep{width:36px;height:1px;background:#283044;margin:4px 0;flex:none}
+.rsp{flex:1}
+/* 我的待办栏 */
+.side{background:#fff;border-right:1px solid #DCE4F2;display:flex;flex-direction:column;min-height:0;box-shadow:8px 0 24px -20px rgba(31,95,214,.35);position:relative;z-index:2}
+.sh{height:60px;flex:none;display:flex;align-items:center;gap:10px;padding:0 var(--s3)}
+.sh .t{font-size:16px;font-weight:700;color:var(--ink)}
+.sh .m{margin-left:auto;font-size:12px;color:var(--muted)}.sh .m b{color:var(--blue);font-variant-numeric:tabular-nums}
+.aisum{margin:0 16px 12px;padding:10px 12px 10px 14px;border:1px solid var(--blue-m);border-radius:8px;background:linear-gradient(100deg,#EEF3FC,#F8FAFE 70%,#fff);position:relative;font-size:12px;line-height:19px;color:var(--text)}
+.aisum::before{content:"";position:absolute;left:-1px;top:10px;bottom:10px;width:3px;border-radius:2px;background:var(--blue)}
+.aisum .h{display:flex;align-items:center;gap:6px;font-weight:700;color:var(--blue-d);margin-bottom:2px}
+.aisum .h .btn{margin-left:auto}
+.aisum em{font-style:normal;color:var(--red);font-weight:700}.aisum u{text-decoration:none;color:#C2560F;font-weight:600}
+.side .tabs{gap:20px;height:38px}.side .tab{height:38px}
+.lhead,.li{display:grid;grid-template-columns:144px 1fr 44px 16px;align-items:center;column-gap:var(--s1);padding:0 var(--s3)}
+.lhead{height:32px;flex:none;font-size:12px;color:var(--muted);border-bottom:1px solid var(--line);background:#F5F8FD}
+.lhead .r,.li .r{text-align:right}
+.list{flex:1;overflow:auto;min-height:0}
+.it{border-bottom:1px solid var(--line);position:relative}
+.li{height:46px;cursor:pointer}
+.li .c{display:flex;align-items:center;gap:8px}
+.li .what{color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.li .what em{font-style:normal;color:var(--muted)}
+.li>svg{color:var(--faint)}
+.it.open{background:linear-gradient(180deg,#EEF3FC,#F7FAFF);box-shadow:inset 3px 0 0 var(--blue),inset 0 0 0 1px var(--blue-m)}
+.it.open .li>svg{transform:rotate(90deg);color:var(--blue)}
+.it.hold{box-shadow:inset 3px 0 0 var(--red)}
+.det{padding:0 var(--s3) 12px}
+.det .kv{background:#fff;border:1px solid var(--line);border-radius:6px;padding:0 12px;box-shadow:0 6px 16px -14px rgba(31,95,214,.5)}
+.det .kv .row{height:34px;grid-template-columns:111px 1fr}
+.det .kv .row:last-child{border-bottom:none}
+.src{display:flex;align-items:center;gap:var(--s1);height:34px;font-size:12px;color:var(--muted)}
+.src b{font-weight:600;color:var(--text)}
+.acts{display:flex;align-items:center;gap:6px}
+.acts .q{height:28px;padding:0 8px;border:1px solid var(--line);border-radius:6px;background:#fff;display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--text)}
+.acts .q svg{color:var(--blue)}
+.acts .sp3{flex:1}
+.cmd{height:64px;flex:none;border-top:1px solid #DCE4F2;display:flex;align-items:center;padding:0 16px;background:#FAFCFF}
+.cmd .box{flex:1;height:40px;border:1px solid var(--blue-m);border-radius:8px;display:flex;align-items:center;gap:var(--s1);padding:0 6px 0 12px;color:var(--faint);background:#fff;box-shadow:0 6px 16px -14px rgba(31,95,214,.6)}
+.cmd .box>svg{color:var(--blue)}
+.cmd .go{margin-left:auto;width:28px;height:28px;border-radius:6px;display:grid;place-items:center;background:linear-gradient(135deg,#1F5FD6,#0E3A8A);color:#fff}
+/* 主区 */
+.main{display:flex;flex-direction:column;padding:var(--s3);gap:var(--s2);min-height:0}
+.ph{flex:none;display:flex;align-items:center;gap:12px;height:40px}
+.ph h2{font-size:20px;line-height:28px;font-weight:800;color:var(--ink);letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.ph .tags{display:flex;gap:6px;flex-wrap:nowrap}
+.tg{height:22px;display:inline-flex;align-items:center;gap:4px;padding:0 8px;border-radius:4px;background:#F2F4F7;font-size:12px;color:var(--text);white-space:nowrap}
+.tg.b{background:var(--blue-l);color:var(--blue-d)}
+.ph .r{margin-left:auto;display:flex;gap:6px}
+.ph .r .btn{height:30px;padding:0 10px;font-size:12px;gap:4px}
+.nodes{flex:none;display:grid;grid-template-columns:repeat(5,1fr);gap:var(--s2)}
+.node{border:1px solid #E3E7EE;border-radius:8px;padding:10px 12px 6px 15px;position:relative;background:#fff;box-shadow:var(--sh)}
+.node::before{content:"";position:absolute;left:-1px;top:-1px;bottom:-1px;width:4px;border-radius:8px 0 0 8px;background:var(--nc)}
+.node:not(:last-child)::after{content:"";position:absolute;top:24px;right:-17px;width:16px;height:7px;background:linear-gradient(var(--frame),var(--frame)) 0 3px/12px 1px no-repeat;clip-path:polygon(0 0,100% 50%,0 100%,0 0);}
+.node.cur{border-color:#F7C7A6;box-shadow:0 0 0 3px #FFF1E7,var(--sh)}
+.nh{display:flex;align-items:center;gap:8px;height:28px;margin-bottom:4px}
+.nh .no{font-size:11px;color:var(--faint);font-variant-numeric:tabular-nums}
+.nh b{font-size:14px;color:var(--ink);white-space:nowrap}
+.nh .pill{margin-left:auto}
+.node .kv .row{height:28px;font-size:12px;grid-template-columns:38.2fr 61.8fr}
+.node .kv .row:last-child{border-bottom:none}
+.main .xg{flex:1}
+.xg-bar{height:48px;gap:6px}
+.xg-bar .t{display:flex;align-items:center;gap:8px;margin-right:4px}
+.xg-bar .btn.sm{height:26px;gap:4px;padding:0 8px}
+
+/* ===== R1E：字号整体小 1px、账本式紧凑行高、概览可收起 ===== */
+body{font-size:12px;line-height:18px}
+.top{height:52px}.brandm h1{font-size:15px}.lm{width:30px;height:30px}
+.app{height:848px}
+.ri{height:48px;font-size:10.5px}
+.sh{height:54px}.sh .t{font-size:15px}
+.aisum{font-size:11.5px;line-height:18px;padding:8px 12px 8px 14px;margin-bottom:10px}
+.tab,.side .tab{font-size:12px}.side .tabs{height:36px}.side .tab{height:36px}
+.lhead{height:30px;font-size:11px}.li{height:40px}
+.det .kv .row{height:30px}.src{height:30px;font-size:11px}
+.cmd{height:56px}.cmd .box{height:36px;font-size:12px}
+.main{padding:16px 24px;gap:12px}
+.ph{height:36px}.ph h2{font-size:19px}.tg{font-size:11px;height:20px}
+.kpi{height:64px;padding:10px 14px;grid-template-rows:18px 26px}.kpi .kl{font-size:11px}.kpi .kv2{font-size:20px;line-height:26px}
+.node{padding:8px 12px 4px 15px}.nh{height:24px;margin-bottom:2px}.nh b{font-size:13px}.node .kv .row{height:26px;font-size:11px}
+.pill{height:20px;line-height:18px;font-size:11px;padding:0 7px}
+.xg-bar{height:42px}.xg-bar .t{font-size:13px}
+.fbar{height:38px;font-size:11px}.chip{height:22px}
+.bulk{height:34px;font-size:11px}.bulk .btn{height:24px;font-size:11px}
+.xg th,.xg td{height:30px;font-size:12px;padding:0 10px}
+.xg thead th{font-size:11px;height:30px}
+.xg td .st{height:29px}
+.xg-foot{height:34px;font-size:11px}.pager span{min-width:22px;height:22px}
+.avc{height:20px;font-size:11px}.av{width:18px;height:18px;font-size:10px}
+.ins{height:18px;line-height:16px;font-size:11px}.act .qi{width:20px;height:20px}
+.btn.sm{font-size:11px}.ph .r .btn{height:28px;font-size:11px}
+.mini{display:none;align-items:center;gap:6px;white-space:nowrap}
+.mini .mk{height:20px;display:inline-flex;align-items:center;gap:3px;padding:0 7px;border-radius:10px;background:var(--blue-l);color:var(--blue-d);font-size:11px}
+.mini .mk b{font-variant-numeric:tabular-nums}.mini .mk.o{background:#FFF1E7;color:#C2560F}.mini .mk.r{background:#FDECEC;color:#C5282E}.mini .mk.y{background:#FDF6DC;color:#9A7400}
+.tgl{border-color:var(--blue-m)!important;color:var(--blue-d)!important;background:var(--blue-l)!important}
+.tgl .t2{display:none}
+body.cz .kpis,body.cz .nodes,body.cz .ov{display:none}
+.app{height:calc(100vh - 52px)}
+.wsc,.rp,.wdone{display:none}
+.ov{display:flex;flex-direction:column;gap:12px;flex:none}
+body.cz .mini{display:inline-flex}
+body.cz .tags{display:none}
+body.cz .main{padding-top:12px;gap:8px}
+.fbar{height:36px}.bulk{height:32px}
+body.cz .tgl .t1{display:none}body.cz .tgl .t2{display:inline}
+
+/* ===== 34 寸带鱼屏（3440×1440）：横向拉伸，16 列全展开，右侧 AI 助手常驻 ===== */
+.rh{height:64px;flex:none;display:flex;align-items:center;gap:12px;padding:3px 20px 0;background:linear-gradient(100deg,#EAF1FD,#F6F9FE 60%,#fff);border-bottom:1px solid #DCE4F2}
+.rh b{display:block;font-size:16px;color:var(--ink)}.rh small{font-size:12px;color:var(--muted)}.rh .pill{margin-left:auto}
+.rtabs{height:44px;flex:none;display:flex;gap:24px;padding:0 20px;border-bottom:1px solid var(--line)}
+.rtabs span{display:flex;align-items:center;gap:4px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.rtabs span.on{color:var(--ink);font-weight:600;border-bottom-color:var(--blue)}
+.rtabs i{font-style:normal;min-width:16px;height:16px;border-radius:8px;background:var(--red);color:#fff;font-size:10px;line-height:16px;text-align:center}
+.rb{flex:1;overflow:auto;padding:4px 20px 16px}
+.rsec{display:flex;align-items:center;gap:6px;height:40px;margin-top:8px;font-weight:700;color:var(--blue-d)}
+.rsec svg{color:var(--blue)}.rsec span{margin-left:auto;font-weight:400;font-size:12px;color:var(--muted)}
+.rp .kv{border:1px solid var(--line);border-radius:6px;padding:0 12px}.rp .kv .row{height:38px}.rp .kv .row:last-child{border-bottom:none}
+.rp .quote{border:1px solid var(--line);border-radius:6px;padding:8px 12px;margin-bottom:8px;line-height:21px}
+.rp .quote b{font-weight:600}.rp .quote p{color:var(--muted)}
+.rp .chn{border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.rp .ct{display:flex;height:34px;border-bottom:1px solid var(--line);background:#F5F8FD}
+.rp .ct span{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;color:var(--muted);border-right:1px solid var(--line)}.rp .ct span:last-child{border-right:none}
+.rp .ct span.on{background:#fff;color:var(--blue-d);font-weight:600;box-shadow:inset 0 -2px 0 var(--blue)}
+.rp .ct i{font-style:normal;min-width:16px;height:16px;border-radius:8px;background:var(--red);color:#fff;font-size:10px;line-height:16px;text-align:center}
+.rp .msg{display:flex;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);align-items:flex-start;line-height:21px}
+.rp .msg small{color:var(--faint);font-size:12px}.rp .msg.ai2{background:#F7FAFF}
+.rp .cin{height:44px;display:flex;align-items:center;gap:8px;padding:0 12px;color:var(--faint)}.rp .cin svg{color:var(--blue)}.rp .cin svg:last-child{margin-left:auto}
+.rp .qk{display:flex;flex-wrap:wrap;gap:8px}.rp .qk span{height:32px;padding:0 12px;border:1px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;gap:6px;background:#fff}.rp .qk svg{color:var(--blue)}
+.rp .dtabs{display:flex;flex-wrap:wrap;gap:6px}.rp .dtabs span{height:28px;padding:0 10px;border-radius:5px;background:#F2F4F7;line-height:28px;font-size:13px}
+.rf{height:72px;flex:none;border-top:1px solid var(--blue-m);display:grid;grid-template-columns:1fr 1.618fr;gap:8px;align-items:center;padding:0 20px;background:#FAFCFF}
+.rf .btn{justify-content:center;height:42px;font-size:14px}
+@media (min-width:2400px){
+ body{font-size:14px;line-height:22px}
+ .top{height:60px;padding-left:20px;gap:20px}.brandm h1{font-size:18px}.bn{font-size:15px}.lm{width:36px;height:36px}.bc{font-size:13px}
+ .cap{font-size:13px;height:28px;border-radius:14px}.cap i{height:28px;font-size:12px}
+ .tsearch{width:380px!important;height:36px;font-size:13px}.tb{font-size:13px}.me2 b{font-size:13px}.me2 small{font-size:12px}
+ .app{grid-template-columns:80px 560px 1fr 520px;height:calc(100vh - 60px)}
+ .rp{display:flex;flex-direction:column;background:#fff;border-left:1px solid #DCE4F2;box-shadow:-8px 0 24px -20px rgba(31,95,214,.35);min-height:0;position:relative}
+ .rp::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#0E1116,#1F5FD6 38.2%,#7FA6EA)}
+ .ri{width:66px;height:58px;font-size:12px}.ri .g{width:30px;height:30px}.ri .g svg{width:18px;height:18px}
+ .sh{height:64px}.sh .t{font-size:17px}.sh .m{font-size:13px}
+ .aisum{font-size:13.5px;line-height:22px;padding:12px 16px}
+ .side .tabs{height:44px}.side .tab{height:44px;font-size:14px}
+ .lhead,.li{grid-template-columns:172px 1fr 52px 16px}
+ .lhead{height:36px;font-size:13px}.li{height:50px;font-size:14px}
+ .det .kv .row{height:38px;grid-template-columns:167px 1fr}.src{height:38px;font-size:13px}
+ .acts .q{height:32px;font-size:13px}.btn.sm{height:30px;font-size:13px}
+ .cmd{height:68px}.cmd .box{height:44px;font-size:13px}
+ .main{padding:20px 32px;gap:16px}
+ .ph{height:44px}.ph h2{font-size:23px}.tg{font-size:13px;height:24px}.ph .r .btn{height:34px;font-size:13px}
+ .mini .mk{font-size:13px;height:24px}
+ .ov{display:grid;grid-template-columns:1fr 1.15fr;gap:16px;flex:none}
+ .ov .kpis{grid-template-columns:repeat(4,1fr)}
+ .kpi{height:auto;min-height:100px;grid-template-columns:36px 1fr 84px;grid-template-rows:22px 34px;align-content:center}.kpi .isq{width:36px;height:36px}
+ .kpi .kl{font-size:13px}.kpi .kv2{font-size:28px;line-height:34px}.kpi .kv2 small{font-size:12px}.kpi svg.spk{width:84px;height:40px}
+ .node{padding:10px 14px 6px 17px}.nh{height:28px}.nh b{font-size:15px}.nh .no{font-size:12px}.node .kv .row{height:30px;font-size:13px}
+ .pill{height:24px;line-height:22px;font-size:13px;padding:0 9px}
+ .xg-bar{height:52px}.xg-bar .t{font-size:16px}.xg-bar .btn.sm{height:32px;font-size:13px}
+ .fbar{height:46px;font-size:13px}.chip{height:28px;padding:0 10px}
+ .bulk{height:44px;font-size:13px}.bulk .btn{height:30px;font-size:13px}
+ .xg th,.xg td{height:38px;font-size:14px;padding:0 14px}.xg thead th{font-size:13px;height:40px}.xg td .st{height:37px}
+ .xg-foot{height:44px;font-size:13px}.pager span{min-width:28px;height:28px}
+ .avc{height:26px;font-size:13px}.av{width:22px;height:22px;font-size:11px}
+ .ins{height:24px;line-height:22px;font-size:13px}.act .qi{width:26px;height:26px}
+ .prog i{width:18px;height:7px}.prog em{font-size:14px}
+ .wdone{display:block;margin:16px 24px 8px;border:1px dashed #C9D7F3;border-radius:8px;background:#FAFCFF;padding:4px 14px 8px}
+ .wdh{height:40px;display:flex;align-items:center;gap:6px;color:var(--blue-d);font-weight:600}.wdh svg{color:var(--blue)}.wdh span{margin-left:auto;font-weight:400;font-size:12px;color:var(--faint)}
+ .wd{display:grid;grid-template-columns:150px 1fr 48px;height:36px;align-items:center;border-top:1px solid var(--line);color:var(--muted);font-size:13px}.wd .cn{font-size:13px;color:var(--text)}.wd em{font-style:normal;text-align:right;color:var(--faint)}
+ .xg-wrap::after{display:none}
+ .top .wm{left:1100px;width:1000px}
+ .hsc{display:none}.wsc{display:inline}
+}
+
+/* ===== R1E · D2 口径：示例标记 / 催办 / 弹窗 / 日志 ===== */
+.demo{font-style:normal;font-size:10px;line-height:14px;height:14px;display:inline-flex;align-items:center;padding:0 4px;margin-left:4px;border-radius:3px;background:#FDF6DC;color:#9A7400;border:1px solid #F1E0A0;font-weight:600;vertical-align:1px;letter-spacing:0}
+.side .tabs{gap:13px}
+.srcl{font-weight:600;color:var(--text);cursor:help;border-bottom:1px dotted #9DB6E6}
+.v.plan{text-decoration:line-through;color:var(--muted)}.v.red{color:var(--red);font-weight:700}
+.tg.rd{background:#FDECEC;color:#C5282E}
+.empty{padding:26px 16px;color:var(--faint);text-align:center;font-size:12px}
+.it.fu .det .kv .row{grid-template-columns:80px 1fr}
+.draft{margin-top:8px;border:1px solid #F7C5C7;border-radius:6px;background:#fff;padding:6px 10px 8px;box-shadow:0 6px 16px -14px rgba(229,72,77,.6)}
+.draft .dh{display:flex;align-items:center;gap:6px;height:24px;color:var(--ink)}.draft .dh svg{color:var(--blue)}.draft .dh span{margin-left:auto;font-size:10.5px;color:#C5282E}
+.draft .dtx{line-height:18px;color:var(--text);font-size:11.5px}
+.draft .rpl{margin-top:6px;border-top:1px dashed var(--line);padding-top:6px}.draft .rpl b{display:flex;gap:4px;align-items:center;font-weight:600}.draft .rpl small{color:var(--blue-d)}
+.it.fu .acts{margin-top:8px;flex-wrap:wrap}.btn[disabled]{opacity:.45;cursor:not-allowed}
+tr.exr td.frz .cn{color:var(--red);font-weight:700}tr.exr td{background:#FFF7F7}
+.node.exn{border-color:#F7C5C7;box-shadow:0 0 0 3px #FDECEC,var(--sh)}
+.modal{position:fixed;inset:0;background:rgba(14,17,22,.38);display:none;align-items:center;justify-content:center;z-index:50}.modal.on{display:flex}
+.mbox{width:440px;background:#fff;border-radius:10px;box-shadow:0 24px 60px -20px rgba(14,17,22,.6);overflow:hidden}
+.mh{height:44px;display:flex;align-items:center;padding:0 16px;border-bottom:1px solid var(--line);font-size:14px}.mh .x,.aph .x{margin-left:auto;cursor:pointer;color:var(--muted);font-size:18px}
+.mb{padding:12px 16px;display:flex;flex-direction:column;gap:6px}.mb label{display:flex;flex-direction:column;gap:4px;color:var(--muted)}
+.mb input{height:32px;border:1px solid #C9D7F3;border-radius:6px;padding:0 10px;font:inherit;color:var(--ink)}.mb input:focus{outline:2px solid var(--blue-m);border-color:var(--blue)}
+.mai{background:#F5F8FD;border-radius:6px;padding:6px 10px;line-height:18px}.hint{font-size:11px;color:var(--faint)}.err{color:var(--red);min-height:16px;font-size:11px}
+.mf{display:flex;gap:6px;padding:10px 16px;border-top:1px solid var(--line);background:#FAFCFF}.btn.rej{color:#C5282E;border-color:#F2A3A6}
+.apop{position:fixed;right:16px;bottom:56px;width:520px;max-height:60vh;background:#fff;border:1px solid #C9D7F3;border-radius:10px;box-shadow:0 24px 60px -24px rgba(14,17,22,.55);display:none;flex-direction:column;z-index:40}.apop.on{display:flex}
+.aph{height:40px;display:flex;align-items:center;gap:8px;padding:0 14px;border-bottom:1px solid var(--line)}.apb{overflow:auto;padding:4px 14px 10px}
+.alist .al{display:grid;grid-template-columns:64px 110px 1fr;column-gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:11.5px;line-height:17px}
+.alist .al .vv{grid-column:2/4;color:var(--text);word-break:break-all}.alist .al small{grid-column:2/4;color:var(--faint)}.alist .al.me{background:#F7FAFF}
+.ac{font-family:ui-monospace,Menlo,monospace;color:var(--blue-d)}.ac-reject{color:var(--red)}.ac-supersede{color:#9A7400}.ac-auto_save{color:var(--muted)}
+.lc{font-weight:400;color:var(--faint)}
+/* ===== 三栏黄金比例（固定，不随内容变）+ 左右栏收缩 ===== */
+:root{--sw:calc((100vw - 72px) / 3.618)}
+.app{grid-template-columns:72px var(--sw) minmax(0,1fr)!important}
+.side,.rp,.main{min-width:0;overflow:hidden}
+body.lcol{--sw:56px}
+.cbtn{margin-left:6px;width:24px;height:24px;border:1px solid #C9D7F3;border-radius:6px;background:#fff;color:var(--blue-d);font-size:14px;line-height:20px;cursor:pointer;flex:none}
+.cbtn:hover,.mtg:hover{background:var(--blue-l)}
+.rh .cbtn{margin-left:8px}
+.smini,.rmini{display:none}
+body.lcol .side>*:not(.smini){display:none!important}
+body.rcol .rp>*:not(.rmini){display:none!important}
+body.lcol .smini,body.rcol .rmini{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;height:100%;background:linear-gradient(180deg,#F7FAFF,#fff)}
+.mtg{width:32px;height:28px;border:1px solid #C9D7F3;border-radius:6px;background:#fff;color:var(--blue-d);font-size:15px;cursor:pointer;margin-bottom:4px}
+.mi{position:relative;width:46px;height:50px;border:none;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;border-radius:8px;color:var(--muted)}
+.mi:hover{background:var(--blue-l)}.mi .g{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;background:#EEF3FC;color:var(--blue)}
+.mi small{font-size:10px;line-height:12px}
+.nb{position:absolute;top:2px;right:2px;min-width:16px;height:16px;border-radius:8px;font-style:normal;font-size:10px;line-height:16px;color:#fff;text-align:center;padding:0 4px;background:var(--blue);font-weight:700}
+.nb.o{background:var(--orange)}.nb.r{background:var(--red)}.nb.y{background:#E0A800}
+.side .tabs{gap:8px!important;padding:0 12px;overflow:hidden}
+/* 主行浓缩 + 行下折叠区 */
+.xpb{width:18px;height:18px;border:none;background:none;padding:0;display:grid;place-items:center;color:var(--faint);cursor:pointer;flex:none;transition:transform .12s}
+.xpb svg{width:14px;height:14px}.xpb.on{transform:rotate(90deg);color:var(--blue)}.xpb:hover{color:var(--blue)}
+tr.xopen td{background:#F3F7FE}
+.xg tr.xrow td{height:auto!important;padding:0!important;white-space:normal;background:#FAFCFF;border-bottom:2px solid var(--blue-m);cursor:default}
+.xfold{display:grid;grid-template-columns:1.618fr 1fr 1fr;gap:12px;padding:10px 12px 12px 40px}
+.xfold.full{grid-template-columns:1fr 1fr}
+@media (max-width:2399px){.xfold{grid-template-columns:1fr 1fr}.xfold>.xsec.xc{grid-column:1/-1}.xfold .xkv{grid-template-columns:repeat(10,1fr)}.sh .avc{display:none}.sh{gap:8px}}
+.xsec{background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 10px 8px;min-width:0}
+.xh{display:flex;align-items:center;gap:5px;height:24px;font-weight:700;color:var(--blue-d);font-size:12px}.xh svg{color:var(--blue)}.xh span{margin-left:auto;font-weight:400;color:var(--faint);font-size:11px}
+.xkv{display:grid;grid-template-columns:repeat(5,1fr);gap:4px 10px;margin-top:4px}
+.xkv>div{display:flex;flex-direction:column;min-width:0}.xkv span{font-size:11px;color:var(--faint)}.xkv b{font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.xms{display:flex;flex-direction:column;gap:4px;margin:4px 0}.xm{display:flex;gap:6px;align-items:flex-start;font-size:11.5px;line-height:16px}.xm p{min-width:0}.xm small{display:block;color:var(--faint);font-size:10.5px}.xm.aim p{color:var(--blue-d)}
+.xbt{display:flex;gap:6px;align-items:center;font-size:11px}
+.xin{display:flex;gap:6px;margin-top:4px}.xin input{flex:1;min-width:0;height:28px;border:1px solid var(--blue-m);border-radius:6px;padding:0 8px;font:inherit;font-size:12px}
+.xin input:focus{outline:2px solid var(--blue-m);border-color:var(--blue)}
+.xnodes{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:8px}.xn{display:flex;flex-direction:column;gap:2px;font-size:11px;color:var(--text);cursor:help}.xn i{height:4px;border-radius:2px}.xn em{font-style:normal;color:var(--faint);font-size:10.5px}
+.xout{margin-top:6px;font-size:11.5px;color:var(--blue-d);min-height:16px}
+/* 右栏分类文件区 */
+.fcats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fcat{border:1px solid var(--line);border-radius:6px;padding:6px 10px 8px;background:#fff}
+.fch{display:flex;height:22px;align-items:center;font-weight:600;color:var(--ink);font-size:12.5px}.fch span{margin-left:auto;font-weight:400;color:var(--faint);font-size:11px}
+.fls{display:flex;flex-direction:column;gap:4px;margin-top:2px}
+.fl2{display:flex;align-items:center;gap:5px;height:26px;padding:0 8px;border:1px solid var(--line);border-radius:5px;color:var(--text);cursor:pointer;font-size:12.5px}
+.fl2 svg{color:var(--faint)}.fl2 em{margin-left:auto;font-style:normal;font-size:11px;color:var(--faint)}
+.fl2.has{border-color:var(--blue-m);background:var(--blue-l)}.fl2.has svg,.fl2.has em{color:var(--blue-d)}
+.fl2:hover{border-color:var(--blue)}
+.fnote{grid-column:1/3;font-size:11px;color:var(--faint)}
+@media (min-width:2400px){
+ :root{--sw:calc((100vw - 80px) / 6.236);--rw:calc((100vw - 80px) / 6.236)}
+ .app{grid-template-columns:80px var(--sw) minmax(0,1fr) var(--rw)!important}
+ body.lcol{--sw:64px}body.rcol{--rw:64px}
+ .cbtn{width:30px;height:30px;font-size:16px}
+ .side .tabs{gap:18px!important;padding:0 16px}
+ .mi{width:54px;height:58px}.mi .g{width:30px;height:30px}.mi small{font-size:11px}
+ .xfold{gap:16px;padding:12px 16px 14px 52px}.xh{font-size:13.5px;height:28px}.xh span{font-size:12px}.xkv span{font-size:12px}.xkv b{font-size:14px}
+ .xm{font-size:13px;line-height:19px}.xm small{font-size:12px}.xin input{height:34px;font-size:13px}.xn{font-size:12.5px}.xn em{font-size:12px}.xout{font-size:13px}
+ .xpb{width:22px;height:22px}.xpb svg{width:16px;height:16px}
+ .fch{font-size:14px}.fl2{height:30px;font-size:13.5px}.fl2 em{font-size:12px}
+}
+
+/* 柜号格内的分段节点进度条：绿=完成 蓝=进行中 红=有问题 灰=未开始 */
+:root{--seg-done:#1F9D55;--seg-cur:#1F5FD6;--seg-bad:#E5484D;--seg-todo:#D5DBE5}
+.cnw{display:flex;flex-direction:column;gap:2px;min-width:0;line-height:15px}
+.nseg{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;width:96px}
+.nseg i{height:4px;border-radius:2px;background:var(--seg-todo);cursor:help}
+.s-done{background:var(--seg-done)!important}.s-cur{background:var(--seg-cur)!important}.s-bad{background:var(--seg-bad)!important}.s-todo{background:var(--seg-todo)!important}
+.nseg.lg{width:52px;display:inline-grid;margin-right:6px;vertical-align:middle}
+.mini .nseg{width:60px}.mini .nseg i{height:6px}
+.prog i[data-tip]{cursor:help}
+.pill.gn{background:#E8F6EE;color:#17803F;border-color:#BDE5CC}
+#ntip{position:fixed;z-index:80;pointer-events:none;background:#0E1116;color:#fff;font-size:12px;line-height:18px;padding:5px 9px;border-radius:6px;white-space:nowrap;opacity:0;transition:opacity .12s;box-shadow:0 8px 20px -8px rgba(14,17,22,.6);left:0;top:0}
+#ntip.on{opacity:.96}#ntip.t-bad{background:#B42318}#ntip.t-done{background:#146C3A}
+@media (min-width:2400px){.nseg{width:112px;gap:3px}.nseg i{height:5px}.cnw{line-height:18px;gap:3px}#ntip{font-size:13px}}
+
+.rtools{flex:none;padding:8px 20px 10px;border-bottom:1px solid var(--line);background:#FAFCFF}
+.rth{display:flex;align-items:center;height:24px;font-weight:700;color:var(--blue-d);font-size:13px}.rth span{margin-left:auto;font-weight:400;font-size:12px;color:var(--faint)}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px}.btn.tl{height:32px;justify-content:center;font-size:13px}.btn.tl svg{color:var(--blue)}
+.tout{margin-top:6px;min-height:20px;font-size:12px;line-height:18px;color:var(--muted)}.tout b{color:var(--ink)}
+
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#0E1116;color:#fff;padding:8px 14px;border-radius:8px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:60}.toast.on{opacity:.94}
+.main{min-width:0}.xg-foot .pager{white-space:nowrap}.xg-foot .pager span.w{white-space:nowrap;min-width:auto;padding:0 6px;display:flex;gap:3px}.xg-foot #audit-btn{margin-left:auto;margin-right:10px;height:24px}
+@media (min-width:2400px){.side .tabs{gap:22px}.it.fu .det .kv .row{grid-template-columns:110px 1fr}.draft .dtx{font-size:13px;line-height:21px}.draft .dh span{font-size:12px}
+ .demo{font-size:11px;height:16px}.alist .al{font-size:13px;line-height:20px;grid-template-columns:70px 130px 1fr}.wd{grid-template-columns:130px 1fr 48px}.wd span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.xg-foot #audit-btn{height:30px}}
+
+/* ===== 节点录入面板（黄金比例 1.618 : 1；间距 4/6/10/16/26/42） ===== */
+.main{position:relative}
+.nodes .node[data-node],.xn[data-node],.prog i[data-node],.nseg i[data-node]{cursor:pointer}
+.nodes .node[data-node]:hover{border-color:var(--blue-m);box-shadow:0 0 0 2px var(--blue-l)}
+.rpn{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:0 0 10px}
+.rpc{display:flex;flex-direction:column;gap:4px;padding:6px;border:1px solid var(--line);border-radius:6px;font-size:11px;cursor:pointer;background:#fff;color:var(--text)}
+.rpc i{height:4px;border-radius:2px}.rpc em{font-style:normal;color:var(--muted);font-size:10px}.rpc:hover{border-color:var(--blue-m)}
+#ne{display:none;position:absolute;inset:0;z-index:40;background:#F7F9FC;flex-direction:column;border-radius:8px;overflow:hidden;box-shadow:0 0 0 1px var(--frame)}
+#ne.on{display:flex}
+.ne-h{flex:none;display:flex;align-items:center;gap:10px;padding:10px 16px;background:#fff;border-bottom:1px solid var(--line)}
+.ne-h .isq{width:26px;height:26px;border-radius:6px;display:grid;place-items:center;background:var(--blue-l);color:var(--blue)}
+.ne-t{display:flex;flex-direction:column;line-height:1.25}.ne-t b{font-size:15px}.ne-t small{font-size:11px;color:var(--muted)}
+.ne-steps{display:flex;gap:4px;margin-left:16px;flex:1;min-width:0}
+.ne-step{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:#fff;font:inherit;font-size:11px;color:var(--text);cursor:pointer;text-align:left}
+.ne-step i{height:5px;border-radius:3px;background:var(--seg-todo)}.ne-step span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ne-step.on{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-l);font-weight:700}
+.ne-prog{font-size:12px;color:var(--muted);white-space:nowrap}.ne-prog b{color:var(--text)}
+.ne-x{width:26px;height:26px;border:1px solid var(--line);border-radius:6px;background:#fff;font-size:18px;line-height:1;cursor:pointer;color:var(--muted)}
+.ne-ban{flex:none;display:flex;align-items:center;gap:6px;margin:10px 16px 0;padding:6px 10px;border-radius:6px;background:#F2F4F7;color:#4B5563;font-size:12px}
+.ne-ban.ok{background:#E8F6EE;color:#17803F}
+.ne-b{flex:1;min-height:0;display:grid;grid-template-columns:1.618fr 1fr;gap:16px;padding:10px 16px;overflow:hidden}
+.ne-l>*,.ne-r>*{flex:none}
+.ne-l,.ne-r{min-height:0;overflow:auto;display:flex;flex-direction:column;gap:10px;padding-right:4px}
+.ne-sec{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px}
+.ne-sec.need{border-color:#FAD5BB;box-shadow:0 0 0 1px #FFF1E7 inset}
+.ne-sh{display:flex;align-items:center;gap:6px;font-size:13px}.ne-sh span{color:var(--muted);font-size:11px}.ne-sh .btn{margin-left:auto}
+.ne-sh.fold{cursor:pointer}.ne-sh em{margin-left:auto;font-style:normal;color:var(--blue);font-size:11px}
+.ne-fold{margin-top:6px;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}.ne-fold b{color:var(--text);font-weight:600}
+.ne-g{margin-top:10px;border:1px solid var(--frame);border-radius:6px;padding:4px 10px 6px;position:relative;background:#fff}
+.ne-g.rv{margin-top:0}.ne-g.rv.need{border-color:#FAD5BB}
+.ne-gh{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--blue-d);padding:4px 0 6px;border-bottom:1px dashed var(--line);margin-bottom:2px}
+.ne-gh .sp{flex:1}.ne-gh b{font-size:13px}
+.ne-row{display:grid;grid-template-columns:122px minmax(120px,1fr) minmax(140px,1fr) 64px auto;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #F2F4F7;font-size:12px}
+.ne-row:last-child{border-bottom:0}
+.ne-row label{color:#374151;display:flex;gap:4px;align-items:center;white-space:nowrap;overflow:hidden}
+.ne-row label i{font-style:normal;font-size:9px;padding:0 4px;border-radius:3px;line-height:14px}
+.ne-row label .gt{background:#FDF6DC;color:#9A7400}.ne-row label .nx{background:var(--blue-l);color:var(--blue)}
+.ne-in{height:26px;border:1px solid var(--frame);border-radius:4px;padding:0 6px;font:inherit;font-size:12px;min-width:0;background:#fff}
+.ne-in:focus{outline:2px solid var(--blue);outline-offset:-1px}
+.ne-in[readonly]{background:#F7F9FC;border-color:transparent;color:#374151}
+.st-pend .ne-in{border-color:#FAD5BB;background:#FFFAF5}.st-ex .ne-in,.st-miss .ne-in{border-color:#F7C5C7;background:#FFF8F8}
+.ne-row.fo{background:var(--blue-l)}
+.ne-src{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cfp{font-weight:700;color:#17803F}.cfp.mid{color:#9A7400}.cfp.lo{color:#C5282E}.gs{color:#6B4FA0}
+.ne-act{display:flex;gap:4px;justify-content:flex-end}.ne-act .btn{height:24px;padding:0 8px}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--blue)}
+.ne-empty{display:flex;gap:6px;align-items:center;margin-top:10px;padding:10px;border-radius:6px;background:#E8F6EE;color:#17803F;font-size:12px}
+.ne-box{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:6px}
+.ne-box.aibx{border-color:#DCD3F0;background:#FCFBFF}
+.ne-bh{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700}.ne-bh span{margin-left:auto;font-weight:400;color:var(--muted);font-size:11px}
+.gate-i{display:flex;gap:6px;align-items:flex-start;font-size:12px;padding:4px 6px;border-radius:4px}
+.gate-i i{font-style:normal;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font-size:10px;flex:none;color:#fff}
+.gate-i.ok i{background:var(--seg-done)}.gate-i.no i{background:var(--red)}.gate-i.no{background:#FFF8F8}
+.gate-i b{font-size:11px;color:var(--muted);flex:none;width:28px}.gate-i span{display:flex;flex-direction:column}.gate-i em{font-style:normal;color:var(--muted);font-size:11px}
+.gate-i small{color:#C5282E;font-size:11px}
+.tip{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;font-size:12px;padding:6px;border-radius:4px;background:#fff;border:1px solid #EEE9F8}
+.tip b{flex:none}.tip span{color:var(--muted);flex:1;min-width:120px}.tip.ok{color:#17803F;border-color:#BDE5CC}
+.draft2{border:1px dashed #C9B8EA;border-radius:6px;padding:6px;font-size:12px;background:#fff}.draft2 b{display:flex;gap:4px;align-items:center}.draft2 span{font-size:10px;color:#C2560F}.draft2 p{margin:4px 0 0;color:#374151;line-height:1.5}
+.fslots{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.fslot{display:grid;grid-template-columns:16px 1fr;gap:0 4px;align-items:center;font-size:11px;padding:4px 6px;border:1px solid var(--line);border-radius:4px;color:var(--muted)}
+.fslot em{grid-column:2;font-style:normal;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fslot.has{border-color:#BDE5CC;background:#F3FBF6;color:#17803F}.fslot.gate:not(.has){border-color:#F7C5C7;background:#FFF8F8;color:#C5282E}
+.drop{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px;border:1.5px dashed var(--blue-m);border-radius:6px;color:var(--blue);font-size:12px;cursor:pointer;background:var(--blue-l)}
+.drop small{color:var(--muted);font-size:10px}.drop.ov{background:#DCE7FB;border-color:var(--blue)}
+.ne-ai{display:flex;gap:6px}.ne-ai input{flex:1;height:30px;border:1px solid var(--frame);border-radius:6px;padding:0 10px;font:inherit;font-size:12px}
+.ne-chips{display:flex;flex-wrap:wrap;gap:4px}.chip2{font-size:11px;padding:2px 8px;border-radius:10px;background:#F3F0FB;color:#6B4FA0;cursor:pointer}
+.ne-aiout{font-size:11px;color:#6B4FA0;min-height:14px}
+.ne-f{flex:none;display:flex;align-items:center;gap:10px;padding:10px 16px;background:#fff;border-top:1px solid var(--line)}
+.ne-f .sp{flex:1}.kb{font-size:11px;color:var(--muted)}kbd{font:inherit;font-size:10px;padding:0 4px;border:1px solid var(--frame);border-bottom-width:2px;border-radius:3px;background:#F7F9FC;margin:0 2px}
+.btn.big{height:34px;padding:0 16px;font-size:13px}.btn[disabled]{opacity:.45;cursor:not-allowed}
+.ne-f .blk{font-size:11px;color:#C5282E;max-width:28%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ne-f{min-width:0}.ne-f .kb{white-space:nowrap}
+@media (min-width:2400px){.ne-row{grid-template-columns:168px minmax(160px,1fr) minmax(200px,1.1fr) 80px auto;font-size:13px;padding:6px 0}.ne-in{height:30px;font-size:13px}
+ .ne-t b{font-size:18px}.ne-step{font-size:13px;padding:6px 10px}.ne-b{gap:26px;padding:16px 26px}.ne-h,.ne-f{padding:10px 26px}.ne-sh,.ne-bh{font-size:15px}.gate-i,.tip,.draft2{font-size:13px}.ne-gh{font-size:12px}.ne-gh b{font-size:14px}.btn.big{height:42px;font-size:15px}.kb{font-size:13px}.ne-ban{margin:10px 26px 0;font-size:13px}.ne-act .btn{height:28px}}
+</style>
+<div class="app">
+ <nav class="rail">
+  <div class="ri" style="--c:#C9D7F3"><span class="g"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3 9.5L10 3.5l7 6V17H3z"/><path d="M8 17v-4.5h4V17"/></svg></span><span>首页</span></div>
+  <div class="ri on"><span class="g"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><rect x="4" y="3" width="12" height="14" rx="1"/><path d="M7 7.5h6M7 10.5h6M7 13.5h3.5"/></svg></span><span>订单</span></div>
+  <div class="ri" style="--c:#7FA6EA"><span class="g"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3 4.5h14v9H8l-4 3v-3H3z"/><path d="M6.5 8.5h7M6.5 11h4"/></svg></span><span>会话</span><i class="n c r" id="rail-chat">0</i></div>
+  <div class="rsep"></div>
+  <div class="ri" style="--c:#60A5FA"><span class="g"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M5 3h7l3 3v11H5z"/><path d="M12 3v3h3M8 10l1.5 1.5L12.5 8.5"/></svg></span><span>ISF</span><i class="n" id="rail-n0"></i></div>
+  <div class="ri" style="--c:#FB923C"><span class="g"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M2 5.5h10v8.5H2z"/><path d="M12 8.5h3.5L18 11.5V14h-6"/><circle cx="5.5" cy="15" r="1.5"/><circle cx="14.5" cy="15" r="1.5"/></svg></span><span>提柜</span><i class="n" id="rail-n1"></i></div>
+  <div class="ri" style="--c:#93C5FD"><span class="g"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M2.5 8L10 3.5 17.5 8v9h-15z"/><path d="M6 17v-5.5h8V17M6 14h8"/></svg></span><span>拆柜</span><i class="n" id="rail-n2"></i></div>
+  <div class="ri" style="--c:#3B82F6"><span class="g"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3 6.5L10 3.5l7 3v7.5l-7 3-7-3z"/><path d="M3 6.5l7 3 7-3M10 9.5v7.5"/></svg></span><span>派送</span><i class="n" id="rail-n3"></i></div>
+  <div class="rsep"></div>
+  <div class="ri" style="--c:#FACC15"><span class="g"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="10" cy="10" r="7"/><path d="M12.5 7.5c-.5-1-1.5-1.5-2.5-1.5-1.5 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1 2-2.5 2c-1.2 0-2.2-.6-2.7-1.6M10 4.5v11"/></svg></span><span>财务</span><i class="n r" id="rail-fin"></i></div>
+  <div class="ri" style="--c:#C9D7F3"><span class="g"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="7.5" cy="7.5" r="2.5"/><path d="M2.5 16c.4-2.5 2.3-4 5-4s4.6 1.5 5 4"/><circle cx="14" cy="7" r="2"/><path d="M13.5 11.5c2 0 3.5 1.2 4 3.5"/></svg></span><span>伙伴</span></div>
+  <div class="ri" style="--c:#C9D7F3"><span class="g"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3 6h14v2.5a1.5 1.5 0 000 3V14H3v-2.5a1.5 1.5 0 000-3z"/><path d="M12 6v8" stroke-dasharray="1.5 1.5"/></svg></span><span>工单</span></div>
+  <div class="ri" style="--c:#C9D7F3"><span class="g"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><rect x="3.5" y="3" width="13" height="14" rx="1"/><path d="M6.5 13.5v-3M10 13.5V7M13.5 13.5v-5"/></svg></span><span>报表</span></div>
+  <div class="ri" style="--c:#7FA6EA"><span class="g"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><rect x="4" y="6.5" width="12" height="9" rx="2"/><path d="M10 3.5v3M7.5 10.5h.01M12.5 10.5h.01M8 13h4"/></svg></span><span>AI</span></div>
+  <div class="rsp"></div>
+  <div class="ri" style="--c:#9AA3B2" title="全部 18 个老菜单：人资/审批/业务平台/客服平台/资产/平台运营/基础配置…"><span class="g"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><rect x="3" y="3" width="5.5" height="5.5" rx="1"/><rect x="11.5" y="3" width="5.5" height="5.5" rx="1"/><rect x="3" y="11.5" width="5.5" height="5.5" rx="1"/><rect x="11.5" y="11.5" width="5.5" height="5.5" rx="1"/></svg></span><span>全部</span></div>
+  <div class="ri" style="--c:#9AA3B2"><span class="g"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="10" cy="10" r="2.5"/><path d="M10 2.5v2.5M10 15v2.5M2.5 10H5M15 10h2.5M4.7 4.7l1.8 1.8M13.5 13.5l1.8 1.8M4.7 15.3l1.8-1.8M13.5 6.5l1.8-1.8"/></svg></span><span>设置</span></div>
+ </nav>
+
+ <aside class="side">
+  <div class="smini" id="smini" data-chk="smini"></div>
+  <div class="sh" data-chk="side-head"><span class="isq"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 2.5l1.8 5.7 5.7 1.8-5.7 1.8-1.8 5.7-1.8-5.7-5.7-1.8 5.7-1.8z"/></svg></span><span class="t">我的待办</span><span class="avc"><i class="av a1">夏</i>夏玮</span><span class="m" id="sh-auto"></span><button class="cbtn" id="lc-btn" data-col="l" title="收起左栏">«</button></div>
+  <div class="aisum" data-chk="aisum"><div class="h"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><rect x="4" y="6.5" width="12" height="9" rx="2"/><path d="M10 3.5v3M7.5 10.5h.01M12.5 10.5h.01M8 13h4"/></svg><span id="aisum-t">AI 小结</span><button class="btn sm pri" id="btn-batch">一键处理</button></div><span id="aisum-b"></span></div>
+  <div class="tabs" id="side-tabs"></div>
+  <div class="lhead"><span>柜号</span><span>AI 读到的变化</span><span class="r">置信</span><span></span></div>
+  <div class="list" id="side-list"></div>
+  <div class="cmd"><div class="box"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 2.5l1.8 5.7 5.7 1.8-5.7 1.8-1.8 5.7-1.8-5.7-5.7-1.8 5.7-1.8z"/></svg><span>让 AI 改一下，如“把 5916422 的派送日改为 10/21”</span><span class="go"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3 10l14-6-6 14-2-6z"/></svg></span></div></div>
+ </aside>
+
+ <main class="main"><div id="ne" role="dialog" aria-label="节点录入"></div>
+  <div class="ph" data-chk="ph">
+   <span class="isq"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3 12.5h14l-2 4H5z"/><path d="M5 12.5V8h10v4.5M8 8V5h4v3"/></svg></span><h2 id="ph-cn"></h2>
+   <span class="tags" id="ph-tags"></span>
+   <span class="mini" id="ph-mini"></span>
+   <div class="r"><button class="btn tgl" onclick="tglOv()" title="一键收起/展开 KPI 卡和节点框"><span class="t1">收起概览 ▴</span><span class="t2">展开概览 ▾</span></button><button class="btn"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3 4.5h14v9H8l-4 3v-3H3z"/><path d="M6.5 8.5h7M6.5 11h4"/></svg>聊天 <span class="bd" id="ph-chat">0</span></button><button class="btn"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M5 2.5h7l3 3v12H5z"/><path d="M12 2.5v3h3"/></svg>BOL</button><button class="btn"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M5 2.5h7l3 3v12H5z"/><path d="M12 2.5v3h3"/></svg>DO</button><button class="btn"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M5 10h.01M10 10h.01M15 10h.01" stroke-width="2.4"/></svg></button></div>
+  </div>
+  <div class="ov">
+  <div class="kpis" data-chk="kpis">
+   <div class="kpi card" style="--kc:#1F5FD6"><span class="isq"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 4v12M4 10h12"/></svg></span><span class="kl">今日新单<i class="demo">示例</i></span><span class="kv2" data-k="new"></span><svg class="spk" viewBox="0 0 84 36" preserveAspectRatio="none"><path d="M2 24 L82 24" fill="none" stroke="#1F5FD6" stroke-width="1.6"/><circle cx="82" cy="24" r="2.4" fill="#1F5FD6"/></svg></div>
+   <div class="kpi card" style="--kc:#F2711C"><span class="isq o"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M4.5 10.5l3.5 3.5 7.5-8"/></svg></span><span class="kl">待确认<i class="demo">示例</i></span><span class="kv2" data-k="pend"></span><svg class="spk" viewBox="0 0 84 36" preserveAspectRatio="none"><path d="M2 24 L82 24" fill="none" stroke="#F2711C" stroke-width="1.6"/><circle cx="82" cy="24" r="2.4" fill="#F2711C"/></svg></div>
+   <div class="kpi card" style="--kc:#E5484D"><span class="isq r"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 3l8 14H2z"/><path d="M10 8.5v3.5M10 14.5h.01"/></svg></span><span class="kl">异常<i class="demo">示例</i></span><span class="kv2" data-k="ex"></span><svg class="spk" viewBox="0 0 84 36" preserveAspectRatio="none"><path d="M2 24 L82 24" fill="none" stroke="#E5484D" stroke-width="1.6"/><circle cx="82" cy="24" r="2.4" fill="#E5484D"/></svg></div>
+   <div class="kpi card" style="--kc:#E0A800"><span class="isq y"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v4.5l3 1.5"/></svg></span><span class="kl">即将到期 LFD<i class="demo">示例</i></span><span class="kv2" data-k="lfd"></span><svg class="spk" viewBox="0 0 84 36" preserveAspectRatio="none"><path d="M2 24 L82 24" fill="none" stroke="#E0A800" stroke-width="1.6"/><circle cx="82" cy="24" r="2.4" fill="#E0A800"/></svg></div>
+  </div>
+  <div class="nodes" id="nodes"></div>
+  </div>
+  <section class="xg" id="g1" data-chk="grid">
+   <div class="xg-bar"><span class="t"><span class="isq sm"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><rect x="4" y="3" width="12" height="14" rx="1"/><path d="M7 7.5h6M7 10.5h6M7 13.5h3.5"/></svg></span>订单台账 <span class="muted" id="xg-count" style="font-weight:400;font-size:12px"></span></span><span class="sp"></span>
+    <button class="btn sm"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 13V3.5M6 7.5l4-4 4 4M3.5 13.5v3h13v-3"/></svg>订单导入</button><button class="btn sm"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 3.5V13M6 9l4 4 4-4M3.5 13.5v3h13v-3"/></svg>导出全部订单</button><button class="btn sm"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 13V3.5M6 7.5l4-4 4 4M3.5 13.5v3h13v-3"/></svg>导入应收</button><button class="btn sm"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 13V3.5M6 7.5l4-4 4 4M3.5 13.5v3h13v-3"/></svg>导入应付</button><button class="btn sm"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3 6h14v2.5a1.5 1.5 0 000 3V14H3v-2.5a1.5 1.5 0 000-3z"/><path d="M12 6v8" stroke-dasharray="1.5 1.5"/></svg>待办工单 <span class="bd">0</span></button><button class="btn sm" id="col-mode" title="主行浓缩 7 列 ⇄ 16 列全展开（列设置）"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><rect x="3" y="4" width="14" height="12" rx="1"/><path d="M8 4v12M12.5 4v12"/></svg>列 16</button><button class="btn sm phi" title="把所有栏宽恢复成 1.618 : 1 : 0.618">φ</button><button class="btn sm ghost" title="刷新" style="padding:0 4px"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M16 6.5A6.5 6.5 0 104.5 14M16 3v3.5h-3.5"/></svg></button><button class="btn sm ghost" title="全屏：收起侧栏和卡片，一屏 18 行" style="padding:0 4px"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3.5 8V3.5H8M12 3.5h4.5V8M16.5 12v4.5H12M8 16.5H3.5V12"/></svg></button></div>
+   <div class="fbar"><span class="lb">待处理</span><span class="chip on">全部</span><span class="chip r" data-f="rej">文件驳回 <b>0</b></span><span class="chip o" data-f="eta">ETA待确认 <b>0</b></span><span class="chip o" data-f="isf">ISF待申报 <b>0</b></span><span class="chip" data-f="aud">订单待审 <b>0</b></span><span class="chip" data-f="mail"></span><i class="demo">示例</i><span class="sp" style="flex:1"></span><span class="chip">订单状态 ▾</span><button class="btn sm pri"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="9" cy="9" r="5"/><path d="M13 13l4 4"/></svg>查询</button><button class="btn sm">重置</button><button class="btn sm ghost">展开 ▾</button></div>
+   <div class="bulk"><b id="bulk-n">已选 0 柜</b><span class="muted">·</span><button class="btn pri" id="bulk-ok"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M4.5 10.5l3.5 3.5 7.5-8"/></svg>批量确认</button><button class="btn"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="10" cy="10" r="7"/><path d="M12.5 7.5c-.5-1-1.5-1.5-2.5-1.5-1.5 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1 2-2.5 2c-1.2 0-2.2-.6-2.7-1.6M10 4.5v11"/></svg>批量费用结算</button><button class="btn"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><rect x="6.5" y="6.5" width="10" height="10" rx="1"/><path d="M13.5 6.5v-3h-10v10h3"/></svg>复制模板消息</button><button class="btn"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><rect x="3" y="4" width="14" height="4" rx="1"/><path d="M4.5 8v8h11V8M8 11h4"/></svg>批量归档</button><span class="sp2"></span><span class="muted" id="bulk-hint"></span></div>
+   <div class="xg-wrap"></div>
+   <div class="xg-foot"><span class="legend"><i class="tri"></i>AI 填写，待你确认</span><span class="legend"><span class="nseg lg"><i class="s-done"></i><i class="s-cur"></i><i class="s-bad"></i><i class="s-todo"></i></span><span class="hsc">绿完成 · 蓝进行中 · 红有问题 · 灰未开始</span><span class="wsc">ISF → 转关提柜 → 仓库 → 清关派送 · 绿 完成 · 蓝 进行中 · 红 有问题 · 灰 未开始（由事件 status 推导，悬停看节点和时间）</span></span><button class="btn sm" id="audit-btn" title="audit_logs：确认/修改/驳回/作废/催办记录"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><rect x="4" y="3" width="12" height="14" rx="1"/><path d="M7 7.5h6M7 10.5h6M7 13.5h3.5"/></svg>操作日志 <span class="bd" id="audit-n">0</span></button><span class="pager"><b id="pager-n">共 0 条</b><span>‹</span><span class="on">1</span><span>›</span><span class="w"><em class="hsc" style="font-style:normal">20</em><em class="wsc" style="font-style:normal">40</em> / 页</span></span></div>
+  </section>
+ </main>
+ <aside class="rp" data-chk="rp">
+  <div class="rmini" id="rmini" data-chk="rmini"></div>
+  <div class="rh"><span class="isq"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 2.5l1.8 5.7 5.7 1.8-5.7 1.8-1.8 5.7-1.8-5.7-5.7-1.8 5.7-1.8z"/></svg></span><div><b>AI 助手</b><small id="rp-cn"></small></div><span class="pill o" id="rp-pill"></span><button class="cbtn" id="rc-btn" data-col="r" title="收起右栏">»</button></div>
+  <div class="rtabs" id="rp-tabs"></div>
+  <div class="rtools" data-chk="rtools"><div class="rth">快捷工具<i class="demo">示意</i><span>不真发 · 不改外部</span></div><div class="tgrid"><button class="btn tl" data-tool="bol" title="示意按钮：不真发、不改外部"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M5 2.5h7l3 3v12H5z"/><path d="M12 2.5v3h3"/></svg>发 BOL</button><button class="btn tl" data-tool="do" title="示意按钮：不真发、不改外部"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M5 2.5h7l3 3v12H5z"/><path d="M12 2.5v3h3"/></svg>发 DO</button><button class="btn tl" data-tool="up" title="示意按钮：不真发、不改外部"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 13V3.5M6 7.5l4-4 4 4M3.5 13.5v3h13v-3"/></svg>上传文件</button><button class="btn tl" data-tool="mail" title="示意按钮：不真发、不改外部"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3 4.5h14v9H8l-4 3v-3H3z"/><path d="M6.5 8.5h7M6.5 11h4"/></svg>生成邮件草稿</button><button class="btn tl" data-tool="print" title="示意按钮：不真发、不改外部"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><rect x="3.5" y="3" width="13" height="14" rx="1"/><path d="M6.5 13.5v-3M10 13.5V7M13.5 13.5v-5"/></svg>打印</button><button class="btn tl" data-tool="xls" title="示意按钮：不真发、不改外部"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 3.5V13M6 9l4 4 4-4M3.5 13.5v3h13v-3"/></svg>导出 Excel</button><button class="btn tl" data-tool="fu" title="示意按钮：不真发、不改外部"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v4.5l3 1.5"/></svg>催办</button><button class="btn tl" data-tool="note" title="示意按钮：不真发、不改外部"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 4v12M4 10h12"/></svg>加备注</button><button class="btn tl" data-tool="track" title="示意按钮：不真发、不改外部"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3 12.5h14l-2 4H5z"/><path d="M5 12.5V8h10v4.5M8 8V5h4v3"/></svg>查船期/轨迹</button></div><div class="tout" id="tool-out">点按钮只在这里显示「将会做什么」</div></div>
+  <div class="rb" id="rp-body"></div>
+  <div class="rf"><button class="btn" id="rp-edit">修改</button><button class="btn pri" id="rp-ok"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M4.5 10.5l3.5 3.5 7.5-8"/></svg>确认并通知客户</button></div>
+ </aside>
+</div>
+<div class="modal" id="edit-modal" role="dialog" aria-modal="true"><div class="mbox">
+ <div class="mh"><b id="em-t">修改</b><span class="x" id="em-x" title="关闭">×</span></div>
+ <div class="mb"><div class="mai" id="em-ai"></div>
+  <label>改成<input id="em-v" autocomplete="off"></label><div class="hint" id="em-hint"></div>
+  <label>备注（写入 audit_logs.note）<input id="em-note" autocomplete="off" placeholder="选填"></label><div class="err" id="em-err"></div></div>
+ <div class="mf"><button class="btn rej" id="em-rej">驳回</button><span style="flex:1"></span><button class="btn" id="em-cancel">取消</button><button class="btn pri" id="em-ok">修改并确认</button></div>
+</div></div>
+<div class="apop" id="audit-pop"><div class="aph"><b>audit_logs</b><span class="faint">本次打开后的操作 · 示例</span><span class="x" id="audit-x">×</span></div><div class="apb" id="audit-body"></div></div>
+<div class="toast" id="toast"></div>
+<script>
+function tglOv(){document.body.classList.toggle('cz');try{localStorage.setItem('r1e:cz',document.body.classList.contains('cz')?1:0)}catch(e){}}
+if(location.hash==='#collapsed'||(function(){try{return localStorage.getItem('r1e:cz')==='1'}catch(e){return false}})())document.body.classList.add('cz');
+</script>
+
+<script>
+const IC={filter:`<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3 4h14l-5.5 6.5V16l-3-1.5v-4z"/></svg>`,chat:`<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3 4.5h14v9H8l-4 3v-3H3z"/><path d="M6.5 8.5h7M6.5 11h4"/></svg>`,file:`<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M5 2.5h7l3 3v12H5z"/><path d="M12 2.5v3h3"/></svg>`,more:`<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M5 10h.01M10 10h.01M15 10h.01" stroke-width="2.4"/></svg>`,lock:`<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><rect x="4.5" y="9" width="11" height="8" rx="1"/><path d="M7 9V6.5a3 3 0 016 0V9"/></svg>`,isf:`<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M5 3h7l3 3v11H5z"/><path d="M12 3v3h3M8 10l1.5 1.5L12.5 8.5"/></svg>`,truck:`<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M2 5.5h10v8.5H2z"/><path d="M12 8.5h3.5L18 11.5V14h-6"/><circle cx="5.5" cy="15" r="1.5"/><circle cx="14.5" cy="15" r="1.5"/></svg>`,wh:`<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M2.5 8L10 3.5 17.5 8v9h-15z"/><path d="M6 17v-5.5h8V17M6 14h8"/></svg>`,deliver:`<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3 6.5L10 3.5l7 3v7.5l-7 3-7-3z"/><path d="M3 6.5l7 3 7-3M10 9.5v7.5"/></svg>`,chev:`<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M8 5l5 5-5 5"/></svg>`,check:`<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M4.5 10.5l3.5 3.5 7.5-8"/></svg>`,bot:`<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><rect x="4" y="6.5" width="12" height="9" rx="2"/><path d="M10 3.5v3M7.5 10.5h.01M12.5 10.5h.01M8 13h4"/></svg>`,clock:`<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="10" cy="10" r="7"/><path d="M10 6v4.5l3 1.5"/></svg>`,copy:`<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><rect x="6.5" y="6.5" width="10" height="10" rx="1"/><path d="M13.5 6.5v-3h-10v10h3"/></svg>`,spark:`<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 2.5l1.8 5.7 5.7 1.8-5.7 1.8-1.8 5.7-1.8-5.7-5.7-1.8 5.7-1.8z"/></svg>`,send:`<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M3 10l14-6-6 14-2-6z"/></svg>`,order:`<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><rect x="4" y="3" width="12" height="14" rx="1"/><path d="M7 7.5h6M7 10.5h6M7 13.5h3.5"/></svg>`,alert:`<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 3l8 14H2z"/><path d="M10 8.5v3.5M10 14.5h.01"/></svg>`,bell:`<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M5 13.5V9a5 5 0 0110 0v4.5l1.5 1.5h-13z"/><path d="M8.5 17h3"/></svg>`,cols:`<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><rect x="3" y="4" width="14" height="12" rx="1"/><path d="M8 4v12M12.5 4v12"/></svg>`,plus:`<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 4v12M4 10h12"/></svg>`,up:`<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 13V3.5M6 7.5l4-4 4 4M3.5 13.5v3h13v-3"/></svg>`};
+const PILLC={'待确认':'o','异常':'r','提醒':'y','AI已录入':'b','已确认':'g','财控暂停':'rr','进行中':'g'};
+const PILL=v=>`<span class="pill ${PILLC[v]||'g'}">${v==='AI已录入'?'<b>AI</b>已录入':v}</span>`;
+const NODES=['ISF','转关提柜','仓库','清关派送'];
+const PROG=(v,r)=>`<span class="prog">${NODES.map((x,i)=>`<i class="${i<r.n?'d':i===r.n?(r.g||'c'):''}" title="${x}"></i>`).join('')}<em>${r.os}</em></span>`;
+const CN=(v,r)=>`<span class="cnc"><input type="checkbox" ${r.chk?'checked':''}><span class="cn">${v}</span>${r.hold?`<span class="lk" title="财控暂停">${IC.lock}</span>`:''}</span>`;
+const OPS={XW:['夏玮','a1'],GY:['高亚萍','a2'],HJ:['Hao J.','a3'],LM:['李敏','a4']};
+const AV=v=>{const o=OPS[v]||[v,'a1'];return `<span class="avc"><i class="av ${o[1]}">${o[0][0]}</i>${o[0]}</span>`};
+const INS=v=>`<span class="ins ${v==='已投保'?'b':v==='不可投保'?'f':''}">${v}</span>`;
+const ACT=()=>`<span class="act"><a>编辑</a><a>更多 ▾</a><span class="qi" title="聊天">${IC.chat}</span><span class="qi" title="文件/BOL/DO">${IC.file}</span></span>`;
+const LFD=(v,r)=>v==='—'?'<span class="faint">—</span>':`<span class="${r.lw==='r'?'lfd r':r.lw==='o'?'lfd o':''}">${v}</span>`;
+const CF=v=>v===''?'<span class="faint">—</span>':`<span class="cf"><i style="width:${Math.round(v*.24)}px;background:${v>=90?'var(--blue)':v>=70?'var(--orange)':'var(--red)'}"></i>${v}%</span>`;
+const ROWS=[
+ {cn:'OOLU8823140',ord:'S26101416',date:'10/15/2026',code:'WA2601-20',mbl:'HDMUNBOZM6Y71100',etd:'10-17',eta:'10-27',size:'40HQ',n:0,os:'待审中',g:'c',todo:'待确认',lfd:'—',ctn:1200,conf:95,op:'XW',ins:'待投保',ai:['todo'],chk:1},
+ {cn:'TGHU6612095',ord:'S26101415',date:'10/15/2026',code:'WA2601-31',mbl:'ONEYSZPGV8309601',etd:'10-20',eta:'11-08',size:'45HQ',n:1,os:'预计提柜',g:'c',todo:'待确认',lfd:'10-18',lw:'o',ctn:1200,conf:92,op:'XW',ins:'待投保',ai:['lfd'],chk:1},
+ {cn:'MSCU5521873',ord:'S26101414',date:'10/15/2026',code:'WA2601-160',mbl:'COSU9510453010',etd:'10-21',eta:'11-06',size:'45HQ',n:2,os:'提柜完成',g:'c',todo:'待确认',lfd:'10-18',lw:'o',ctn:980,conf:88,op:'HJ',ins:'已投保',ai:['ctn']},
+ {cn:'SEGU4410786',ord:'S26101412',date:'10/14/2026',code:'WA2601-32',mbl:'SZPGW0081300',etd:'10-22',eta:'11-14',size:'45HQ',n:2,os:'转运出仓',g:'r',todo:'异常',lfd:'10-16',lw:'r',ctn:1180,conf:38,op:'HJ',ins:'已投保',ai:['ctn']},
+ {cn:'SEGU5941003',ord:'S26101400',date:'10/12/2026',code:'WA2601-83',mbl:'ONEYSZPGV1369514',etd:'10-13',eta:'10-27',size:'45HQ',n:3,os:'预计派送',g:'r',todo:'财控暂停',lfd:'10-19',ctn:860,conf:97,op:'LM',ins:'已投保',ai:[],hold:1},
+ {cn:'TCLU3398021',ord:'S26101407',date:'10/14/2026',code:'WA2601-99',mbl:'ONEYSZPGW5953900',etd:'10-15',eta:'11-01',size:'45HQ',n:0,os:'审核通过',g:'r',todo:'异常',lfd:'—',ctn:420,conf:52,op:'GY',ins:'待投保',ai:[]},
+ {cn:'MEDU6620417',ord:'S26101411',date:'10/14/2026',code:'WA2601-15',mbl:'ONEYSZPGX6358300',etd:'10-21',eta:'11-13',size:'45HQ',n:0,os:'ISF完成',g:'y',todo:'提醒',lfd:'—',ctn:1050,conf:'',op:'GY',ins:'待投保',ai:[]},
+ {cn:'CSNU7712340',ord:'S26101410',date:'10/14/2026',code:'WA2551',mbl:'OOLU2175028990',etd:'10-21',eta:'11-07',size:'40HQ',n:1,os:'ETA确认',g:'c',todo:'待确认',lfd:'—',ctn:1320,conf:86,op:'XW',ins:'待投保',ai:['etd']},
+ {cn:'FFAU3390412',ord:'S26101398',date:'10/11/2026',code:'WA2508',mbl:'ONEYSZPGW3961600',etd:'10-13',eta:'10-27',size:'45HQ',n:3,os:'运输中',g:'d',todo:'AI已录入',lfd:'10-20',ctn:760,conf:99,op:'LM',ins:'已投保',ai:[]},
+ {cn:'BEAU5129008',ord:'S26101397',date:'10/11/2026',code:'WA2601-125',mbl:'HDUJGLA26LJ00363',etd:'10-14',eta:'10-28',size:'45HQ',n:3,os:'过境完成',g:'d',todo:'AI已录入',lfd:'—',ctn:1100,conf:99,op:'LM',ins:'已投保',ai:[]},
+ {cn:'OOCU7046631',ord:'S26101409',date:'10/14/2026',code:'WA2601-99',mbl:'EGLV149608646679',etd:'10-18',eta:'11-03',size:'45HQ',n:1,os:'ETA确认',g:'d',todo:'AI已录入',lfd:'10-21',ctn:1240,conf:98,op:'XW',ins:'待投保',ai:[]},
+ {cn:'HLXU8812075',ord:'S26101405',date:'10/13/2026',code:'WA2601-25',mbl:'ONEYSZPGY8162600',etd:'10-18',eta:'11-07',size:'45HQ',n:2,os:'提柜完成',g:'d',todo:'AI已录入',lfd:'10-17',ctn:510,conf:96,op:'HJ',ins:'已投保',ai:[]},
+ {cn:'MSKU2290184',ord:'S26101404',date:'10/13/2026',code:'WA2601-99',mbl:'EGLV149608046649',etd:'10-18',eta:'11-07',size:'45HQ',n:3,os:'清关完成',g:'d',todo:'已确认',lfd:'10-17',ctn:890,conf:91,op:'LM',ins:'已投保',ai:[]},
+ {cn:'CAIU6650322',ord:'S26101403',date:'10/13/2026',code:'WA2601-15',mbl:'ONEYHKGGK6479706',etd:'10-18',eta:'11-07',size:'45HQ',n:2,os:'提柜完成',g:'d',todo:'已确认',lfd:'10-19',ctn:1150,conf:97,op:'HJ',ins:'已投保',ai:[]},
+ {cn:'TRHU4471209',ord:'S26101402',date:'10/12/2026',code:'WA2551',mbl:'KORPNBO9920836',etd:'10-15',eta:'11-03',size:'40HQ',n:0,os:'ISF完成',g:'d',todo:'AI已录入',lfd:'—',ctn:1000,conf:99,op:'GY',ins:'待投保',ai:[]},
+ {cn:'GESU5507813',ord:'S26101401',date:'10/12/2026',code:'WA2526',mbl:'ONEYNBOGM3218400',etd:'10-15',eta:'10-30',size:'45HQ',n:3,os:'预计派送',g:'c',todo:'待确认',lfd:'10-20',ctn:700,conf:84,op:'LM',ins:'已投保',ai:['eta']},
+ {cn:'TCNU2087761',ord:'S26101399',date:'10/12/2026',code:'WA2601-127',mbl:'YMJAW237390124',etd:'10-16',eta:'11-05',size:'45HQ',n:3,os:'派送到仓',g:'c',todo:'待确认',lfd:'—',ctn:1320,conf:94,op:'LM',ins:'已投保',ai:[]},
+ {cn:'CAIU7781120',ord:'S26101413',date:'10/15/2026',code:'WA2551',mbl:'ONEYTSNG95275800',etd:'10-19',eta:'11-06',size:'45HQ',n:2,os:'拆柜完成',g:'d',todo:'已确认',lfd:'10-18',ctn:940,conf:98,op:'HJ',ins:'已投保',ai:[]}];
+/* 全部老列 + 新列；min=最小宽度，超出可横向滚动，列设置可显示/隐藏 */
+const COLS_ALL={
+ cn:{key:'cn',title:'集装箱号',th:'<input type="checkbox" class="hc"> 集装箱号',tier:'main',render:CN,min:156},
+ ord:{key:'ord',title:'订单编号',tier:'normal',min:96},
+ code:{key:'code',title:'客户编码',tier:'normal',min:100},
+ prog:{key:'prog',title:'订单状态 · 节点',tier:'main',render:PROG,min:150},
+ todo:{key:'todo',title:'待办',tier:'normal',render:PILL,min:96},
+ lfd:{key:'lfd',title:'LFD',tier:'minor',num:1,render:LFD,min:64},
+ conf:{key:'conf',title:'AI 置信',tier:'minor',num:1,render:CF,min:96},
+ op:{key:'op',title:'跟单',tier:'normal',render:AV,min:92},
+ mbl:{key:'mbl',title:'提单号',tier:'main',min:152},
+ date:{key:'date',title:'订单日期',tier:'normal',num:1,min:96},
+ etd:{key:'etd',title:'ETD',tier:'minor',num:1,min:64},
+ eta:{key:'eta',title:'ETA',tier:'minor',num:1,min:64},
+ size:{key:'size',title:'规格',tier:'minor',min:64},
+ ctn:{key:'ctn',title:'箱数',tier:'minor',num:1,min:64},
+ ins:{key:'ins',title:'投保状态',tier:'normal',render:INS,min:84},
+ act:{key:'act',title:'操作',tier:'normal',render:ACT,min:176,nf:1},
+};
+
+/* ===== R1E 示例数据（对齐 D2 口径）=====
+   柜号与状态：Brian 给的 5 个柜；订单号、客户编码、供应商代码、群名、消息 ID 全部为虚构示例，不含真实客户名或金额。
+   node_events 口径：field_value / prev_value 统一字符串，日期时间 ISO 8601；status ∈ pending / confirmed / superseded / rejected；
+   superseded_by = 取代它的事件 id；ai_confidence 存 0–1，显示时转百分比。 */
+const TZ='America/Los_Angeles', TODAY='2026-10-15';
+const AUTO_SAVE=0.98, EX_BELOW=0.70, OVERDUE_H=24;
+const STATUS_ENUM=['pending','confirmed','superseded','rejected'];
+const STATUS_CN={pending:'待确认',confirmed:'已确认',superseded:'已作废',rejected:'已驳回'};
+const ISO_DT=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([+-]\d{2}:\d{2}|Z)$/, ISO_D=/^\d{4}-\d{2}-\d{2}$/, ISO_I=/^\d{4}-\d{2}-\d{2}\/\d{4}-\d{2}-\d{2}$/;
+const _p=d=>Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(d).map(x=>[x.type,x.value]));
+const fmtT=iso=>{if(!iso)return'';const p=_p(new Date(iso));return `${p.month}/${p.day} ${p.hour=='24'?'00':p.hour}:${p.minute}`};
+const fmtHM=iso=>{const p=_p(iso?new Date(iso):new Date());return `${p.hour=='24'?'00':p.hour}:${p.minute}`};
+const fmtD=d=>d.slice(5).replace('-','/');
+const fmtVal=v=>v==null||v===''?'—':ISO_DT.test(v)?fmtT(v):ISO_I.test(v)?v.split('/').map(fmtD).join('–'):ISO_D.test(v)?fmtD(v):v;
+const pct=c=>c==null||c===''?'':Math.round(c*100)+'%';
+const SUPPLIERS={'RAIL-A01':'示例铁路承运商 A','TRK-B02':'示例车队 B','CB-C03':'示例报关行 C','WH-D04':'示例监管仓 D','ISF-E05':'示例 ISF 申报行 E','TE-F06':'示例转关行 F','DRY-G07':'示例拖车行 G','OMS-DOC':'客户上传单证（示例）','XB-H08':'示例过境行 H'};
+const FIELD_LABEL={wh_status:'监管仓状态',transload_plan_at:'计划转柜日',customs_cleared_at:'清关日期',border_status:'过境状态',
+  dispatch_status:'发车状态',border_crossed_at:'过境时间',arrival_city:'实际到达城市',delivery_plan:'计划派送日',dispatch_eta:'预计发车日',truck_departed_at:'发车时间'};
+/* 节点下标：0 订单审核 · 1 ISF · 2 转关提柜 · 3 仓库拆柜 · 4 清关派送 */
+const NODE_OF={wh_status:3,transload_plan_at:3,customs_cleared_at:4,border_status:4,dispatch_status:4,border_crossed_at:4,arrival_city:2,delivery_plan:4,dispatch_eta:4,truck_departed_at:4};
+/* 柜（台账行）：只有柜号、运输方式和状态是 Brian 给的；其余为示例或留空 */
+const CONTAINERS=[
+ {cn:'ZCSU9043359',mode:'火车',ord:'DEMO-01',code:'示例客户-01',op:'XW',node:3,state:'待入监管仓 · 计划16号转柜',fields:{wh_status:'铁路在途'},plan:{}},
+ {cn:'SEGU5645439',mode:'火车',ord:'DEMO-02',code:'示例客户-02',op:'GY',node:4,state:'15号已清关 · 待过境',fields:{},plan:{}},
+ {cn:'SEGU5911689',mode:'卡车',ord:'DEMO-03',code:'示例客户-03',op:'HJ',node:4,state:'已发车',fields:{},plan:{},chk:1},
+ {cn:'TEMU8049954',mode:'卡车',ord:'DEMO-04',code:'示例客户-04',op:'LM',node:4,state:'10/13 过境 · 暂未发车',fields:{},plan:{}},
+ {cn:'SEGU5916422',mode:'火车',ord:'DEMO-05',code:'示例客户-05',op:'XW',node:2,state:'计划到墨城 · 实际已到瓜城',fields:{arrival_city:'墨西哥城（墨城）'},plan:{arrival_city:'墨西哥城（墨城）'},chk:1}];
+const NODE_EVENTS=[
+ {id:'E01',container_no:'ZCSU9043359',node_key:'warehouse',field_key:'wh_status',field_value:'待入监管仓',prev_value:'铁路在途',source_type:'supplier',supplier_code:'RAIL-A01',reported_at:'2026-10-15T06:40:00-07:00',chat_group_name:null,message_id:null,message_at:null,ai_confidence:0.98,status:'confirmed',superseded_by:null,confirmed_by:'AI 自动保存',confirmed_at:'2026-10-15T06:41:12-07:00'},
+ {id:'E02',container_no:'ZCSU9043359',node_key:'warehouse',field_key:'transload_plan_at',field_value:'2026-10-16',prev_value:null,source_type:'chat',supplier_code:null,reported_at:null,chat_group_name:'示例·跨境运营群',message_id:'wxg-demo-1015-0001',message_at:'2026-10-15T07:55:00-07:00',ai_confidence:0.91,status:'pending',superseded_by:null,confirmed_by:null,confirmed_at:null},
+ {id:'E03',container_no:'SEGU5645439',node_key:'customs',field_key:'customs_cleared_at',field_value:'2026-10-15',prev_value:null,source_type:'supplier',supplier_code:'CB-C03',reported_at:'2026-10-15T09:20:00-07:00',chat_group_name:null,message_id:null,message_at:null,ai_confidence:0.99,status:'confirmed',superseded_by:null,confirmed_by:'AI 自动保存',confirmed_at:'2026-10-15T09:21:05-07:00'},
+ {id:'E04',container_no:'SEGU5645439',node_key:'customs',field_key:'border_status',field_value:'待过境',prev_value:null,source_type:'supplier',supplier_code:'CB-C03',reported_at:'2026-10-15T09:20:00-07:00',chat_group_name:null,message_id:null,message_at:null,ai_confidence:0.98,status:'confirmed',superseded_by:null,confirmed_by:'AI 自动保存',confirmed_at:'2026-10-15T09:21:05-07:00'},
+ {id:'E05',container_no:'SEGU5911689',node_key:'delivery',field_key:'dispatch_status',field_value:'已发车',prev_value:null,source_type:'chat',supplier_code:null,reported_at:null,chat_group_name:'示例·车队对接群',message_id:'wxg-demo-1015-0002',message_at:'2026-10-15T08:15:00-07:00',ai_confidence:0.96,status:'pending',superseded_by:null,confirmed_by:null,confirmed_at:null},
+ {id:'E06',container_no:'TEMU8049954',node_key:'customs',field_key:'border_crossed_at',field_value:'2026-10-13T11:30:00-07:00',prev_value:null,source_type:'supplier',supplier_code:'TRK-B02',reported_at:'2026-10-13T12:05:00-07:00',chat_group_name:null,message_id:null,message_at:null,ai_confidence:0.99,status:'confirmed',superseded_by:null,confirmed_by:'AI 自动保存',confirmed_at:'2026-10-13T12:06:30-07:00'},
+ {id:'E07',container_no:'TEMU8049954',node_key:'delivery',field_key:'dispatch_status',field_value:'暂未发车',prev_value:null,source_type:'chat',supplier_code:null,reported_at:null,chat_group_name:'示例·车队对接群',message_id:'wxg-demo-1015-0003',message_at:'2026-10-15T07:50:00-07:00',ai_confidence:0.62,status:'pending',superseded_by:null,confirmed_by:null,confirmed_at:null},
+ {id:'E08',container_no:'SEGU5916422',node_key:'transit',field_key:'arrival_city',field_value:'瓜达拉哈拉（瓜城）',prev_value:null,source_type:'supplier',supplier_code:'RAIL-A01',reported_at:'2026-10-15T10:30:00-07:00',chat_group_name:null,message_id:null,message_at:null,ai_confidence:0.88,status:'pending',superseded_by:null,confirmed_by:null,confirmed_at:null},
+ {id:'E09',container_no:'SEGU5916422',node_key:'delivery',field_key:'delivery_plan',field_value:'2026-10-20/2026-10-21',prev_value:null,source_type:'chat',supplier_code:null,reported_at:null,chat_group_name:'示例·跨境运营群',message_id:'wxg-demo-1015-0004',message_at:'2026-10-15T11:05:00-07:00',ai_confidence:0.80,status:'pending',superseded_by:null,confirmed_by:null,confirmed_at:null}];
+/* 依据原文（示例，非真实消息；聊天原文属 chat_messages，不在 node_events 里） */
+const EVIDENCE={E01:'【示例】ZCSU9043359 已到站，待入监管仓',E02:'【示例】9043359 明天 16 号转柜，监管仓那边排好了',E03:'【示例】SEGU5645439 pedimento 已放行（10/15）',
+  E04:'【示例】SEGU5645439 等待过境排队',E05:'【示例】5911689 车已经发出去了',E06:'【示例】TEMU8049954 crossed 10/13 11:30',E07:'【示例】8049954 还在等，车没排上',
+  E08:'【示例】SEGU5916422 arrived at Guadalajara terminal',E09:'【示例】5916422 下周二三派送'};
+const EV={};NODE_EVENTS.forEach(e=>EV[e.id]=e);
+const CT={};CONTAINERS.forEach(c=>CT[c.cn]=c);
+const AUDIT_LOGS=[], FOLLOWUPS=[];
+/* 来源显示：supplier → supplier_code · reported_at；chat → 群名 · message_at（悬停 message_id）；时间一律 PT */
+function srcText(e){if(!e)return'';
+  if(e.source_type=='supplier')return `${e.supplier_code} · ${fmtT(e.reported_at)}`;
+  if(e.source_type=='chat')return `群：${e.chat_group_name} · ${fmtT(e.message_at)}`;
+  if(e.source_type=='doc')return `文件 · ${e.supplier_code} · ${fmtT(e.reported_at)}`;
+  return `人工录入 · ${e.confirmed_by||''}`}
+function srcTitle(e){if(e.source_type=='chat')return `message_id: ${e.message_id}`;
+  if(e.source_type=='supplier'||e.source_type=='doc')return `${SUPPLIERS[e.supplier_code]||e.supplier_code}（示例）· reported_at ${e.reported_at}`;return ''}
+function srcHTML(e){return e?`<b class="srcl s-${e.source_type}" data-msgid="${e.message_id||''}" title="${srcTitle(e)}">${srcText(e)}</b>`:''}
+
+/* ===== 节点录入：栏位 / 门闩定义 + 示例数据（全部假数据，只用 5 个柜号） =====
+   来源：bbtex-legacy-data/20-wms-db-exports/order/订单操作流程-老WMS-20261005.md 第 3–7 步 + 102 列导出表头。
+   Box 里「状态维护 71 栏 / 18 门闩」原表本机没有 → 栏位按上面两份资料整理（文件上传另列，不计入 71），门闩为合理假设：【未确认】 */
+const ENTRY_NODES=[
+ {key:'review',name:'订单审核',ic:'check',review:true,groups:[
+   {k:'basic',t:'基本信息',f:[['rv_cust_code','客户编码','text'],['rv_order_type','订单类型','sel','整柜'],['rv_mode','运输方式','sel'],['rv_mbl','提单号','text'],['rv_cn','集装箱号','text'],['rv_etd_at','ETD','date'],['rv_eta_at','ETA','date'],['rv_size','规格','sel','40HQ'],['rv_pol','起运港','text','示例港 A'],['rv_pod','目的港','text','示例港 B'],['rv_services','订单服务','text','ISF / 转关 / 提柜 / 拆柜 / 装柜 / 派送']]},
+   {k:'ship',t:'装运信息',f:[['rv_cargo_type','货物类型','sel','普货'],['rv_ctns','CTNS','num','1200'],['rv_loaded','实际装柜件数','num','1200'],['rv_kgs','KGS','num','18000'],['rv_cbm','CBM','num','68'],['rv_pallet','Pallet','num','20'],['rv_desc','货物描述','text','示例货物（家居用品）']]},
+   {k:'isfinfo',t:'ISF 申报信息',f:[['rv_mbl_scac','MBL SCAC#','text','DEMO'],['rv_ams','AMS#','text'],['rv_ams_scac','AMS SCAC#','text','DEMA'],['rv_carrier','Carrier','text','示例船司'],['rv_shipper','Shipper','text','示例发货方'],['rv_consignee','Consignee','text','示例收货方'],['rv_tariff',"Tariff #'s",'text','9403.60（示例）']]},
+   {k:'addr',t:'派送地址',f:[['rv_company','公司名称','text'],['rv_addr','地址','text'],['rv_contact','联系人','text','示例联系人'],['rv_phone','电话','text','示例电话'],['rv_rfc','RFC','text'],['rv_zip','邮编','text','DEMO-ZIP'],['rv_recv_time','收货时间','text','工作日 09:00–17:00'],['rv_urgency','加急等级','sel','正常']]}]},
+ {key:'isf',name:'ISF',ic:'isf',groups:[
+   {k:'isf',t:'ISF 申报',f:[['isf_rec_doc_at','Rec-ISF Doc','date'],['isf_company','ISF 申报公司','sup','ISF-E05'],['isf_done_at','ISF 完成日期','date'],['isf_receipt_no','ISF 回执单号','text'],['isf_receipt_at','ISF 回执日期','date']]}],
+  files:['ISF 回执文件'],
+  gates:[['G01','收到 ISF 资料','ISF收件',['isf_rec_doc_at']],['G02','ISF 完成 + 回执单号','ISF完成',['isf_done_at','isf_receipt_no']],['G03','ISF 回执文件已上传','',['file:ISF 回执文件']]]},
+ {key:'drayage',name:'转关提柜',ic:'truck',groups:[
+   {k:'te',t:'转关',f:[['te_receive_doc_at','Receive Doc','date'],['te_send_doc_at','Send T&E DOC','date'],['te_arrival_at','Arrival Date','date'],['te_terminal','码头','sel','示例码头 T1'],['te_date_at','转关日期','date'],['te_no','T&E 号码','text'],['te_close_at','TE 关闭日期','date'],['te_company','转关公司','sup','TE-F06'],['te_do_mail','转关 DO 邮件','flag','已发']]},
+   {k:'pk',t:'提柜',f:[['pk_avail_at','可提柜日期','date'],['pk_lfd_at','货柜 LFD','date'],['pk_plan_at','预计提柜','date'],['pk_company','提柜公司','sup','DRY-G07'],['pk_done_at','提柜完成','date'],['pk_dest','目的仓库 / 不拆柜','sel','WH-D04 拆柜'],['pk_short_truck','短驳卡车公司','sup','DRY-G07',1],['pk_return_at','还柜完成','date'],['pk_do_mail','提柜 DO 邮件','flag','已发']]},
+   {k:'insp',t:'查验（有才填）',f:[['insp_at','查验日期','date',null,1],['insp_note','查验说明','text',null,1],['insp_done_at','查验完成','date',null,1]]}],
+  extra:['arrival_city'],files:['提柜 POD','T&E 文件','DO 文件','A/N 文件'],
+  gates:[['G04','到港（Arrival Date）','ETA确认',['te_arrival_at']],['G05','转关：T&E 号码 + 转关公司','',['te_no','te_company']],['G06','可提柜日期','可提柜',['pk_avail_at']],['G07','预计提柜 + 提柜公司','预计提柜',['pk_plan_at','pk_company']],['G08','提柜完成 + 提柜 POD','提柜完成',['pk_done_at','file:提柜 POD']]]},
+ {key:'warehouse',name:'仓库拆柜',ic:'wh',groups:[
+   {k:'in',t:'入仓',f:[['wh_operator','操作仓库','sup','WH-D04'],['wh_in_at','入仓日期','date'],['wh_hold','仓库拦截指令','text','无',1]]},
+   {k:'dv',t:'拆柜',f:[['dv_company','拆柜公司','sup','WH-D04'],['dv_done_at','拆柜完成','date'],['dv_qty','拆柜数 托 / 件','text','20 托 / 1200 件'],['dv_short','少','num','0'],['dv_over','多','num','0']]},
+   {k:'ld',t:'装柜出仓',f:[['ld_split','拆分 / 并入','text','无',1],["ld_dv53","53'DV#",'text'],['ld_trailer_at','Trailer 到达','datetime'],['ld_company','装柜公司','sup','WH-D04'],['ld_qty','装柜数 托 / 件','text','20 托 / 1200 件'],['ld_at','装柜日期','date'],['ld_out_at','出仓日期','date'],['ld_trailer_tr','Trailer 转运','text'],['ld_mode','实际运输方式','sel'],['ld_seal','seal 号码','text']]},
+   {k:'mail',t:'邮件 / 标记',f:[['wh_bol_sent','BOL 是否已发','flag','已发'],['wh_la_mail','LA 出仓邮件','flag','已发']]}],
+  extra:['wh_status','transload_plan_at'],files:['仓库照片（DO/海柜/封箱锁/库内/出仓）','中转操作文件','BOL','拆柜单'],
+  gates:[['G09','入仓：日期 + 操作仓库','',['wh_in_at','wh_operator']],['G10','拆柜完成 + 件数核对（少 / 多）','',['dv_done_at','dv_qty','dv_short','dv_over']],['G11','装柜：seal + 53\'DV# + 实际运输方式','',['ld_seal','ld_dv53','ld_mode']],['G12','出仓日期 + 仓库照片','转运出仓',['ld_out_at','file:仓库照片（DO/海柜/封箱锁/库内/出仓）']]]},
+ {key:'delivery',name:'清关派送',ic:'deliver',groups:[
+   {k:'cc',t:'清关过境',f:[['customs_cleared_at','清关完成','date'],['cc_value','清关货值','text','示例 · 不显示金额'],['cc_decl_no','报关单号','text'],['xb_company','过境申报公司','sup','XB-H08'],['xb_wh','过境操作仓库','sup','WH-D04']]},
+   {k:'tr',t:'配车 / 封条',f:[['tr_car_at','配车厢日期','date'],['tr_car_no','派送车厢号','text'],['tr_gps','GPS 设备号','text'],['tr_seal','转运封条号码','text'],['tr_lock','加强锁号','text']]},
+   {k:'dl',t:'派送',f:[['dl_company','派送公司','sup','TRK-B02'],['truck_departed_at','发车时间','datetime'],['dl_etacdmex','ETACDMEX','date'],['dl_notify_at','卡车通知可派','date'],['delivery_plan','预计派送','interval'],['dl_confirm_msg','确认派送讯息','text','已确认']]},
+   {k:'ms',t:'多卸 / 滞留（有才填）',f:[['dl_stop1','1st 暂存仓 送仓起止','text',null,1],['dl_stop2','2nd 暂存仓 送仓起止','text',null,1],['dl_detain','滞留开始 / 结束','text',null,1],['dl_drop','Drop 开始 / 结束','text',null,1]]},
+   {k:'sg',t:'签收',f:[['dl_arrive_at','到仓时间','datetime'],['dl_unload_at','卸货结束时间','datetime'],['dl_sign_at','签收日期','date'],['dl_pod_qty','POD 签收件数','num'],['dl_diff_qty','差异件数','num']]}],
+  extra:['border_status','border_crossed_at','dispatch_status','dispatch_eta'],files:['POD-内部','客户回执文件','签收文件回执'],
+  gates:[['G13','清关完成 + 报关单号','清关完成',['customs_cleared_at','cc_decl_no']],['G14','过境：申报公司 + 过境时间','过境完成',['xb_company','border_crossed_at']],['G15','发车时间','运输中',['truck_departed_at']],['G16','预计派送','预计派送',['delivery_plan']],['G17','到仓时间','派送到仓',['dl_arrive_at']],['G18','签收日期 + POD','签收完成',['dl_sign_at','file:POD-内部']]]}];
+/* 展开成字段表 */
+const EF={};ENTRY_NODES.forEach((n,i)=>n.groups.forEach(g=>g.f.forEach(([k,l,t,d,opt])=>{EF[k]={k,l,t,d,opt:!!opt,node:i,group:g.k};FIELD_LABEL[k]=l;NODE_OF[k]=i})));
+['arrival_city','wh_status','transload_plan_at','border_status','border_crossed_at','dispatch_status','dispatch_eta'].forEach(k=>{if(!EF[k])EF[k]={k,l:FIELD_LABEL[k],t:/_at$/.test(k)?(k==='border_crossed_at'?'datetime':'date'):'text',node:NODE_OF[k],group:'extra',extra:1}});
+ENTRY_NODES.forEach((n,i)=>{FIELD_LABEL['node_done_'+n.key]=n.name+' · 本节完成';NODE_OF['node_done_'+n.key]=i});
+const ENTRY_TYPES={};Object.values(EF).forEach(f=>{if(['date','datetime','interval'].includes(f.t))ENTRY_TYPES[f.k]=f.t});
+/* 去哪抓（缺失时 AI 提示）：[说明, 催问对象] */
+const WHERE={isf_receipt_no:['ISF-E05 回执邮件','ISF-E05'],pk_done_at:['DRY-G07 提柜回单 / POD','DRY-G07'],'file:提柜 POD':['DRY-G07 提柜后回传 POD 照片','DRY-G07'],pk_return_at:['DRY-G07 还柜 EIR','DRY-G07'],
+  wh_in_at:['WH-D04 入仓回执（计划 16 号转柜后）','WH-D04'],dv_done_at:['WH-D04 拆柜单','WH-D04'],dv_qty:['WH-D04 拆柜单','WH-D04'],dv_short:['WH-D04 拆柜单','WH-D04'],dv_over:['WH-D04 拆柜单','WH-D04'],ld_seal:['WH-D04 装柜照片 / 封条照','WH-D04'],ld_dv53:['WH-D04 装柜记录','WH-D04'],ld_mode:['运输计划（火车 / 卡车）',''],ld_out_at:['WH-D04 出仓记录','WH-D04'],
+  'file:仓库照片（DO/海柜/封箱锁/库内/出仓）':['WH-D04 共享相册','WH-D04'],border_crossed_at:['CB-C03 / 车队过境回传','CB-C03'],truck_departed_at:['TRK-B02 发车回传 / 群消息','TRK-B02'],delivery_plan:['派送公司排期','TRK-B02'],
+  dl_arrive_at:['司机到仓回传','TRK-B02'],dl_sign_at:['POD 签收单','TRK-B02'],'file:POD-内部':['司机 POD 照片','TRK-B02'],xb_company:['过境行委托单','XB-H08'],cc_decl_no:['CB-C03 报关单（Pedimento）','CB-C03'],
+  isf_rec_doc_at:['客户 ISF 资料邮件',''],isf_done_at:['ISF-E05 回执','ISF-E05'],'file:ISF 回执文件':['ISF-E05 回执邮件附件','ISF-E05'],te_arrival_at:['船司 A/N 到货通知',''],te_no:['TE-F06 转关回执','TE-F06'],te_company:['转关委托','TE-F06'],
+  pk_avail_at:['码头放行信息',''],pk_plan_at:['DRY-G07 预约','DRY-G07'],pk_company:['提柜委托','DRY-G07']};
+/* ---------- 示例值生成（全假） ---------- */
+const NODE_BASE=['2026-09-12','2026-09-20','2026-10-02','2026-10-08','2026-10-12'];
+function addDays(d,n){const t=new Date(d+'T12:00:00Z');t.setUTCDate(t.getUTCDate()+n);return t.toISOString().slice(0,10)}
+function demoVal(f,c,ix,j){const n=String(ix+1).padStart(2,'0');
+  if(f.t==='date')return addDays(NODE_BASE[f.node],j%5);
+  if(f.t==='datetime')return addDays(NODE_BASE[f.node],j%5)+'T10:30:00-07:00';
+  if(f.t==='interval')return addDays(NODE_BASE[f.node],3)+'/'+addDays(NODE_BASE[f.node],4);
+  const M={rv_cust_code:c.code,rv_mode:c.mode,rv_mbl:'DEMO-MBL-'+n,rv_cn:c.cn,rv_ams:'DEMO-AMS-'+n,rv_company:'示例收货方-'+n,rv_addr:c.cn==='SEGU5916422'?'示例地址（墨城）':'示例地址-'+n,rv_rfc:'RFC-DEMO-'+n,
+    isf_receipt_no:'ISF-DEMO-'+n+'81',te_no:'TE-DEMO-'+n+'52',ld_dv53:'DV-DEMO-'+n+'53',ld_trailer_tr:'示例 Trailer-'+n,ld_mode:c.mode,ld_seal:'SEAL-DEMO-'+n+'09',cc_decl_no:'PED-DEMO-'+n+'47',tr_car_no:'CAR-DEMO-'+n,tr_gps:'GPS-DEMO-'+n+'18',tr_seal:'TSEAL-DEMO-'+n,tr_lock:'LOCK-DEMO-'+n,dl_pod_qty:'1200',dl_diff_qty:'0'};
+  return M[f.k]??f.d??('示例-'+n)}
+const SRC_OF=f=>({review:'OMS-DOC',isf:'ISF-E05',drayage:f.k.startsWith('te_')?'TE-F06':'DRY-G07',warehouse:'WH-D04',delivery:f.group==='cc'?(f.k.startsWith('xb')?'XB-H08':'CB-C03'):'TRK-B02'})[ENTRY_NODES[f.node].key];
+/* 当前节点：AI 已自动录入 / 待确认（其余 = 缺失或待发生） */
+const CUR={
+ SEGU5916422:{auto:['te_receive_doc_at','te_send_doc_at','te_arrival_at','te_terminal','te_date_at','te_no','te_close_at','te_company','te_do_mail','pk_avail_at','pk_lfd_at','pk_plan_at','pk_company','pk_do_mail'],
+   pend:{pk_done_at:['2026-10-14',0.93,'doc'],pk_dest:['不拆柜 · 铁路直发',0.88,'supplier']},files:['T&E 文件','DO 文件','A/N 文件']},
+ ZCSU9043359:{auto:['wh_operator','wh_hold','ld_split','ld_mode'],pend:{},files:[]},
+ SEGU5645439:{auto:['cc_value','cc_decl_no','xb_company','dl_company'],pend:{xb_wh:['WH-D04',0.90,'supplier'],tr_car_at:['2026-10-15',0.91,'chat']},files:[]},
+ SEGU5911689:{auto:['customs_cleared_at','cc_value','cc_decl_no','xb_company','xb_wh','tr_car_at','tr_car_no','tr_gps','tr_seal','tr_lock','dl_company'],pend:{delivery_plan:['2026-10-17/2026-10-18',0.86,'chat']},files:[]},
+ TEMU8049954:{auto:['customs_cleared_at','cc_value','cc_decl_no','xb_company','xb_wh','tr_car_at','tr_car_no','tr_gps','tr_seal','tr_lock','dl_company'],pend:{},files:[]}};
+const ENTRY_FILES={};   // ENTRY_FILES[cn][nodeIdx][slot]={name,at,by}
+const ENTRY_DRAFTS=[];  // AI 代起草的催问（只显示，不发送）
+(function seed(){let seq=0;const nid=()=>'N'+String(++seq).padStart(4,'0');
+  const has=(cn,k)=>NODE_EVENTS.some(e=>e.container_no===cn&&e.field_key===k);
+  const mk=(c,f,v,o)=>{const sup=o.src==='chat'?null:SRC_OF(f);const t=o.at;
+    const e={id:nid(),container_no:c.cn,node_key:ENTRY_NODES[f.node].key,field_key:f.k,field_value:v,prev_value:null,source_type:o.src||'doc',supplier_code:o.src==='chat'?null:sup,reported_at:o.src==='chat'?null:t,
+      chat_group_name:o.src==='chat'?'示例·跨境运营群':null,message_id:o.src==='chat'?'wxg-demo-entry-'+seq:null,message_at:o.src==='chat'?t:null,ai_confidence:o.conf,status:o.status,superseded_by:null,
+      confirmed_by:o.status==='confirmed'?(o.conf>=AUTO_SAVE?'AI 自动保存':'夏玮'):null,confirmed_at:o.status==='confirmed'?o.cat:null,origin:'entry'};
+    NODE_EVENTS.push(e);EV[e.id]=e;if(o.status==='confirmed')c.fields[f.k]=v;EVIDENCE[e.id]=`【示例】${SUPPLIERS[sup]||'群消息'}：${f.l} ${fmtVal(v)}`;return e};
+  CONTAINERS.forEach((c,ix)=>{ENTRY_FILES[c.cn]={};
+   ENTRY_NODES.forEach((n,i)=>{ENTRY_FILES[c.cn][i]={};
+    const fs=n.groups.flatMap(g=>g.f.map(x=>EF[x[0]]));
+    if(i<c.node){ // 已完成节点：历史值全部已确认（多数 AI 自动保存）
+      fs.forEach((f,j)=>{if(f.opt||has(c.cn,f.k))return;const day=addDays(NODE_BASE[i],j%5);const man=(j+ix)%7===3;
+        mk(c,f,demoVal(f,c,ix,j),{status:'confirmed',conf:man?0.92:0.99,at:day+'T09:'+String(10+j%40).padStart(2,'0')+':00-07:00',cat:day+'T09:'+String(12+j%40).padStart(2,'0')+':00-07:00',src:i===0?'doc':'supplier'})});
+      (n.files||[]).forEach(s=>ENTRY_FILES[c.cn][i][s]={name:`demo-${n.key}-${s.length}.pdf`,at:addDays(NODE_BASE[i],2)+'T11:00:00-07:00',by:'AI 归档'});
+    }else if(i===c.node){const C=CUR[c.cn]||{auto:[],pend:{},files:[]};
+      fs.forEach((f,j)=>{if(has(c.cn,f.k))return;
+        if(C.auto.includes(f.k))mk(c,f,demoVal(f,c,ix,j),{status:'confirmed',conf:0.99,src:'supplier',at:(j%2?'2026-10-14':TODAY)+'T0'+(5+j%4)+':'+String(10+j*3%45).padStart(2,'0')+':00-07:00',cat:(j%2?'2026-10-14':TODAY)+'T0'+(5+j%4)+':'+String(12+j*3%45).padStart(2,'0')+':00-07:00'});
+        else if(C.pend[f.k]){const [v,cf,src]=C.pend[f.k];mk(c,f,v,{status:'pending',conf:cf,src,at:TODAY+'T10:'+String(10+j).padStart(2,'0')+':00-07:00'})}});
+      C.files.forEach(s=>ENTRY_FILES[c.cn][i][s]={name:`demo-${n.key}-${s.length}.pdf`,at:TODAY+'T08:00:00-07:00',by:'AI 归档'})}
+   })});
+  // 订单审核：派送地址因「实际到瓜城」有一条变更待确认
+  const c=CT.SEGU5916422,f=EF.rv_addr;const e=mk(c,f,'示例地址（瓜城）',{status:'pending',conf:0.86,src:'chat',at:TODAY+'T11:20:00-07:00'});e.prev_value=null;EVIDENCE[e.id]='【示例】5916422 改送瓜城仓，地址按新的来';
+})();
+
+/* ===== R1E 交互层：所有计数由 NODE_EVENTS / FOLLOWUPS 现算，样张不发送任何消息 ===== */
+(function(){
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const DEMO='<i class="demo" title="由示例事件数据现算，非真实业务量">示例</i>';
+const NODE_IC=['check','isf','truck','wh','deliver'], NODE_SQ=['g','','n','k','l'];
+const FIELD_TYPE=Object.assign({transload_plan_at:'date',customs_cleared_at:'date',border_crossed_at:'datetime',delivery_plan:'interval',dispatch_eta:'date',truck_departed_at:'datetime'},typeof ENTRY_TYPES!=='undefined'?ENTRY_TYPES:{});
+const ME='夏玮';
+let SEL=null, TAB='pend', RT='chk', OPEN=null;
+const LSG=k=>{try{return localStorage.getItem(k)}catch(e){return null}}, LSS=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+let FULL=LSG('r1e:full')==='1', EXP=new Set(), LC=LSG('r1e:lc')==='1', RC=LSG('r1e:rc')==='1';
+/* 主行浓缩：主行只留 7 列，其余 9 列收进行下折叠区；「列」按钮可切回 16 列全展开（旧功能保留） */
+const MAIN_KEYS=['cn','ord','code','prog','todo','conf','act'], FOLD_KEYS=['op','lfd','mbl','date','etd','eta','size','ctn','ins'];
+const ALL_KEYS=['cn','ord','code','prog','todo','lfd','conf','op','mbl','date','etd','eta','size','ctn','ins','act'];
+/* ---------- 时间：一律 PT，ISO 8601 带偏移 ---------- */
+function isoNow(ms){const d=new Date(ms??Date.now());const p=_p(d);const h=p.hour=='24'?'00':p.hour;
+  const loc=Date.UTC(+p.year,+p.month-1,+p.day,+h,+p.minute,d.getUTCSeconds());const off=Math.round((loc-d.getTime())/6e4);
+  const s=off<0?'-':'+',a=Math.abs(off);return `${p.year}-${p.month}-${p.day}T${h}:${p.minute}:${String(d.getUTCSeconds()).padStart(2,'0')}${s}${String(a/60|0).padStart(2,'0')}:${String(a%60).padStart(2,'0')}`}
+const dayPT=iso=>{const p=_p(iso?new Date(iso):new Date());return `${p.year}-${p.month}-${p.day}`};
+window.isoNow=isoNow;
+/* ---------- 口径 ---------- */
+const evsOf=cn=>NODE_EVENTS.filter(e=>e.container_no===cn);
+const isEx=e=>e.status==='pending'&&e.ai_confidence<EX_BELOW;
+const isPend=e=>e.status==='pending'&&e.ai_confidence>=EX_BELOW;
+const isAuto=e=>e.status==='confirmed'&&e.confirmed_by==='AI 自动保存';
+const isConflict=e=>{const c=CT[e.container_no];return !!(c.plan[e.field_key]&&c.plan[e.field_key]!==e.field_value)};
+function overdueOf(c){const cross=NODE_EVENTS.find(e=>e.container_no===c.cn&&e.field_key==='border_crossed_at'&&e.status==='confirmed');if(!cross)return null;
+  const gone=NODE_EVENTS.some(e=>e.container_no===c.cn&&e.status==='confirmed'&&((e.field_key==='dispatch_status'&&e.field_value==='已发车')||e.field_key==='truck_departed_at'));if(gone)return null;
+  const h=(Date.now()-Date.parse(cross.field_value))/36e5;return h>OVERDUE_H?{h:Math.floor(h),cross}:null}
+/* 冲突对（conflict_with 互指且都 pending）只算 1 条 */
+function uniq(list){const seen=new Set();return list.filter(e=>{if(e.conflict_with&&seen.has(e.conflict_with))return false;seen.add(e.id);return true})}
+function counts(){const T=dayPT();
+  const pend=uniq(NODE_EVENTS.filter(isPend)), ex=uniq(NODE_EVENTS.filter(isEx));
+  const autoToday=NODE_EVENTS.filter(e=>isAuto(e)&&dayPT(e.confirmed_at)===TODAY);
+  const confirmed=NODE_EVENTS.filter(e=>e.status==='confirmed'&&dayPT(e.confirmed_at)===TODAY);
+  const exCt=CONTAINERS.filter(c=>evsOf(c.cn).some(isEx)||overdueOf(c));
+  const fuOpen=FOLLOWUPS.filter(f=>f.status!=='closed');
+  return {pend,ex,autoToday,confirmed,exCt,fuOpen,remind:reminders(),
+    rejected:NODE_EVENTS.filter(e=>e.status==='rejected').length,superseded:NODE_EVENTS.filter(e=>e.status==='superseded').length,
+    fuSent:FOLLOWUPS.filter(f=>f.approved_at).length,fuDraft:FOLLOWUPS.filter(f=>!f.approved_at).length,
+    newToday:0,lfd:0,hold:0,chat:NODE_EVENTS.filter(e=>e.source_type==='chat'&&e.status==='pending').length}}
+function reminders(){const t0=Date.parse(TODAY+'T00:00:00-07:00');
+  return NODE_EVENTS.filter(e=>(e.status==='pending'||e.status==='confirmed')&&FIELD_TYPE[e.field_key]&&['transload_plan_at','delivery_plan','dispatch_eta'].includes(e.field_key)).filter(e=>{
+    const d=Date.parse(e.field_value.slice(0,10)+'T00:00:00-07:00');return d>t0&&d-t0<=2*864e5})}
+window.R1E={counts,overdueOf,EV,NODE_EVENTS,AUDIT_LOGS,FOLLOWUPS,CONTAINERS,isoNow,get SEL(){return SEL}};
+/* ---------- audit_logs ---------- */
+function audit(o){const a=Object.assign({id:'AL-'+String(AUDIT_LOGS.length+1).padStart(4,'0'),table_name:'node_events',record_id:null,container_no:null,action:null,
+  field_key:null,prev_value:null,field_value:null,status:null,ai_value:null,note:'',source_type:null,actor:ME,created_at:isoNow()},o);AUDIT_LOGS.push(a);return a}
+/* ---------- 写操作 ---------- */
+const STATE_FIELDS={dispatch_status:v=>v,truck_departed_at:v=>`${fmtVal(v)} 已发车`,arrival_city:v=>`已到${v.replace(/.*（(.*)）/,'$1')}`,border_status:v=>v};
+function supersede(old,by,actor){if(old.status==='superseded')return;const ps=old.status;old.status='superseded';old.superseded_by=by.id;
+  audit({record_id:old.id,container_no:old.container_no,action:'supersede',field_key:old.field_key,prev_value:old.field_value,field_value:by.field_value,status:'superseded',ai_value:old.field_value,source_type:old.source_type,actor,note:`被 ${by.id} 取代（原 ${ps}）`})}
+function confirmEv(id,newVal,actor=ME,note=''){const e=EV[id];if(!e||e.status!=='pending')return false;const c=CT[e.container_no];
+  const ai=e.field_value, mod=newVal!=null&&newVal!==ai;if(mod)e.field_value=newVal;
+  e.prev_value=c.fields[e.field_key]??null;e.status='confirmed';e.confirmed_by=actor;e.confirmed_at=isoNow();
+  c.fields[e.field_key]=e.field_value;if(STATE_FIELDS[e.field_key])c.state=STATE_FIELDS[e.field_key](e.field_value);
+  audit({record_id:e.id,container_no:c.cn,action:actor==='AI 自动保存'?'auto_save':mod?'modify_confirm':'confirm',field_key:e.field_key,prev_value:e.prev_value,field_value:e.field_value,status:'confirmed',ai_value:ai,source_type:e.source_type,actor,note:note||(actor==='AI 自动保存'?`置信 ${pct(e.ai_confidence)} ≥ ${pct(AUTO_SAVE)} 自动保存`:'')});
+  NODE_EVENTS.filter(o=>o!==e&&o.container_no===c.cn&&o.field_key===e.field_key&&(o.status==='pending'||o.status==='confirmed')).forEach(o=>supersede(o,e,actor));
+  if(e.conflict_with&&EV[e.conflict_with])supersede(EV[e.conflict_with],e,actor);return true}
+function rejectEv(id,note=''){const e=EV[id];if(!e||e.status!=='pending')return false;e.status='rejected';e.confirmed_by=ME;e.confirmed_at=isoNow();
+  audit({record_id:e.id,container_no:e.container_no,action:'reject',field_key:e.field_key,prev_value:CT[e.container_no].fields[e.field_key]??null,field_value:e.field_value,status:'rejected',ai_value:e.field_value,source_type:e.source_type,note});return true}
+function ingest(e){e=Object.assign({id:'E'+String(NODE_EVENTS.length+1).padStart(2,'0'),prev_value:null,chat_group_name:null,message_id:null,message_at:null,supplier_code:null,reported_at:null,status:'pending',superseded_by:null,confirmed_by:null,confirmed_at:null},e);
+  NODE_EVENTS.push(e);EV[e.id]=e;if(e.ai_confidence>=AUTO_SAVE)confirmEv(e.id,null,'AI 自动保存');return e}
+Object.assign(window.R1E,{confirmEv,rejectEv,ingest,audit,isEx,isPend,isConflict,evsOf,dayPT,draftFor:null,toast:m=>toast(m),select:cn=>select(cn),get SELc(){return SEL}});
+/* ---------- 今日催办 ---------- */
+function draftFor(c,od){return `${od.cross.supplier_code} 您好：柜号 ${c.cn} 已于 ${fmtT(od.cross.field_value)}（PT）过境，到现在约 ${od.h} 小时还没收到发车信息。麻烦回复：① 预计发车时间；② 车牌 / 司机。如有单证、查验或排车问题请一起说明，谢谢！—— BBTEX ${ME}`}
+function buildFollowups(){CONTAINERS.forEach(c=>{const od=overdueOf(c);if(!od||FOLLOWUPS.some(f=>f.container_no===c.cn))return;
+  FOLLOWUPS.push({id:'F'+String(FOLLOWUPS.length+1).padStart(2,'0'),container_no:c.cn,reason:'overdue_dispatch',to_supplier:od.cross.supplier_code,based_on:od.cross.id,
+   created_at:isoNow(),status:'draft',draft:draftFor(c,od),approved_by:null,approved_at:null,reply:null,reply_event_ids:[]})})}
+function fuApprove(id){const f=FOLLOWUPS.find(x=>x.id===id);if(!f||f.approved_at)return;
+  if(!confirm('样张：这里只记录「人工已确认发送」，不会真的发出任何消息。继续？'))return;
+  f.approved_by=ME;f.approved_at=isoNow();f.status='approved';
+  audit({table_name:'followups',record_id:f.id,container_no:f.container_no,action:'followup_approve',field_value:f.draft,status:'approved',note:'人工确认发送 · 样张不真发（未调用任何发送接口）'});render();toast('已记录人工确认 · 样张未真发')}
+function fuReply(id,kind){const f=FOLLOWUPS.find(x=>x.id===id);if(!f||!f.approved_at||f.reply)return;const now=Date.now(),c=CT[f.container_no];
+  let evs;
+  if(kind==='clear'){f.reply=`【示例回复】${c.cn} 车已发出，${fmtHM(isoNow(now-15*6e4))} 出发，车牌 示例-B-0921`;
+    evs=[ingest({container_no:c.cn,node_key:'delivery',field_key:'dispatch_status',field_value:'已发车',source_type:'supplier',supplier_code:f.to_supplier,reported_at:isoNow(now),ai_confidence:0.98}),
+         ingest({container_no:c.cn,node_key:'delivery',field_key:'truck_departed_at',field_value:isoNow(now-15*6e4).replace(/:\d\d([+-])/,':00$1'),source_type:'supplier',supplier_code:f.to_supplier,reported_at:isoNow(now),ai_confidence:0.98})];
+    c.state=`已发车（${f.to_supplier} 回复 ${fmtHM()}）`}
+  else{f.reply=`【示例回复】${c.cn.slice(4)} 应该明天能排上车`;
+    evs=[ingest({container_no:c.cn,node_key:'delivery',field_key:'dispatch_eta',field_value:'2026-10-16',source_type:'supplier',supplier_code:f.to_supplier,reported_at:isoNow(now),ai_confidence:0.74})]}
+  evs.forEach(e=>EVIDENCE[e.id]=f.reply);f.reply_event_ids=evs.map(e=>e.id);f.replied_at=isoNow(now);
+  f.status=overdueOf(c)?'replied':'closed';
+  audit({table_name:'followups',record_id:f.id,container_no:c.cn,action:'followup_reply',field_value:f.reply,status:f.status,source_type:'supplier',actor:'AI 读取回复',note:`生成 ${f.reply_event_ids.join('、')}（${evs.map(e=>STATUS_CN[e.status]).join('、')}）`});
+  SEL=c.cn;render();toast(kind==='clear'?'读到明确回复：置信 98% 已自动保存，原「暂未发车」已作废':'读到含糊回复：置信 74% 进入待确认')}
+Object.assign(window.R1E,{fuApprove,fuReply,buildFollowups});
+/* ---------- 节点状态：全部由事件 status 推导 ----------
+   bad=该节点有 <0.70 的 pending（AI 拿不准）或过境超时未发车；done=节点在当前节点之前，或该节点的完成字段已 confirmed；
+   cur=当前节点；todo=未开始。时间取该节点最近一条有效事件的 confirmed_at / reported_at / message_at（PT）。 */
+const NODE_NAMES=['订单审核','ISF','转关提柜','仓库拆柜','清关派送'];
+const ST_CN={done:'已完成',cur:'进行中',bad:'有问题',todo:'未开始'};
+function nodeStates(c){const evs=evsOf(c.cn).filter(e=>e.status!=='rejected'&&e.status!=='superseded'),od=overdueOf(c);
+  return NODE_NAMES.map((name,i)=>{const ne=evs.filter(e=>(NODE_OF[e.field_key]??c.node)===i);
+    const done=i<c.node; // 本节完成 = 录入面板「全部确认并完成本节」写入 node_done_* 事件后 c.node 前进
+    const bad=ne.some(isEx)||(i===c.node&&!!od);
+    const ts=ne.map(e=>e.confirmed_at||e.reported_at||e.message_at).filter(Boolean).sort();const t=ts.length?fmtT(ts[ts.length-1])+' PT':'';
+    const st=bad?'bad':done?'done':i===c.node?'cur':'todo';
+    const why=bad?(ne.some(isEx)?'AI 拿不准，待核实':`过境 ${od.h} 小时未发车`):st==='cur'&&ne.some(e=>e.status==='pending')?(ne.some(isConflict)?'计划≠实际，待确认':'有待确认事件'):'';
+    return {i,name,st,t,why,tip:`${String(i+1).padStart(2,'0')} ${name} · ${ST_CN[st]}${why?' · '+why:''} · ${t||'示例无事件时间'}`}})}
+const NSEG=ns=>`<span class="nseg" role="img" aria-label="${ns.map(n=>n.name+' '+ST_CN[n.st]).join('，')}">${ns.map(n=>`<i class="s-${n.st}" data-node="${n.i}" data-tip="${esc(n.tip)}"></i>`).join('')}</span>`;
+window.R1E.nodeStates=c=>nodeStates(typeof c==='string'?CT[c]:c);
+/* ---------- 台账行 ---------- */
+function rowOf(c){const evs=evsOf(c.cn),pend=evs.filter(e=>e.status==='pending'),ex=evs.some(isEx)||!!overdueOf(c);
+  const live=evs.filter(e=>e.status!=='superseded'&&e.status!=='rejected');const last=pend.length?pend.reduce((a,b)=>a.ai_confidence<b.ai_confidence?a:b):live[live.length-1];
+  const rem=reminders().some(e=>e.container_no===c.cn);
+  return {cn:c.cn,ord:c.ord,code:c.code,date:'—',mbl:'—',etd:'—',eta:'—',size:'—',ctn:'—',ins:'—',lfd:'—',op:c.op,n:c.node,os:`${c.mode} · ${c.state}`,
+   g:ex?'r':'c',todo:ex?'异常':pend.length?'待确认':rem?'提醒':evs.some(e=>isAuto(e)&&dayPT(e.confirmed_at)===TODAY)?'AI已录入':'已确认',
+   ns:nodeStates(c),conf:last?last.ai_confidence:'',ai:pend.length?['prog','todo','conf']:[],chk:c.chk?1:0,hold:0,ex}}
+COLS_ALL.cn.render=(v,r)=>`<span class="cnc"><button class="xpb${EXP.has(v)?' on':''}" data-xp="${v}" title="${EXP.has(v)?'收起':'展开'}这一行（收起栏位 / 工单聊天 / AI 输入）" aria-expanded="${EXP.has(v)}">${IC.chev}</button><input type="checkbox" ${r.chk?'checked':''}><span class="cnw"><span class="cn">${v}</span>${NSEG(r.ns)}</span></span>`;
+COLS_ALL.prog.render=(v,r)=>`<span class="prog">${r.ns.map(n=>`<i class="s-${n.st}" data-node="${n.i}" data-tip="${esc(n.tip)}"></i>`).join('')}<em>${r.os}</em></span>`;
+COLS_ALL.conf.render=v=>v===''?'<span class="faint">—</span>':`<span class="cf"><i style="width:${Math.round(v*24)}px;background:${v>=.9?'var(--blue)':v>=EX_BELOW?'var(--orange)':'var(--red)'}"></i>${pct(v)}</span>`;
+let GRID_ROWS=[];
+function renderGrid(){const g=$('#g1'),w=$('.xg-wrap',g),st=w.scrollTop;w.innerHTML='';GRID_ROWS=CONTAINERS.map(rowOf);const C=COLS_ALL;
+  const cols=(FULL?ALL_KEYS:MAIN_KEYS).map(k=>C[k]);
+  XGrid(g,{id:FULL?'r1e-full':'r1e-main',sel:Math.max(0,CONTAINERS.findIndex(c=>c.cn===SEL)),rows:GRID_ROWS,cols});
+  $$('tbody tr',w).forEach((tr,i)=>{const r=GRID_ROWS[i];tr.dataset.cn=r.cn;if(r.ex)tr.classList.add('exr');
+    if(EXP.has(r.cn)){tr.classList.add('xopen');const x=document.createElement('tr');x.className='xrow';x.dataset.cn=r.cn;
+      x.innerHTML=`<td colspan="${cols.length}">${foldHTML(CT[r.cn],r)}</td>`;tr.after(x)}});
+  w.scrollTop=st;const hb=$('#bulk-hint');if(hb)hb.textContent=FULL?'16 列全部在主行 · 栏宽按 1.618 : 1 : 0.618':'主行 7 列 · 其余 9 列在行下折叠区（点 ▸ 展开）';const b=$('#col-mode');if(b)b.innerHTML=`${IC.cols}${FULL?'列 16 · 全展开':'主行 7 列 · 折叠 9'}`}
+/* 行下折叠区：收起的栏位 + 工单/聊天 + AI 输入框 */
+function foldHTML(c,r){const C=COLS_ALL,f=FOLLOWUPS.find(x=>x.container_no===c.cn),evs=evsOf(c.cn);
+  const cols=FULL?'':`<div class="xsec xc"><div class="xh">${IC.cols}收起的栏位<span>${FOLD_KEYS.length} 列 · 点「主行 7 列」可切回 16 列</span></div><div class="xkv">${FOLD_KEYS.map(k=>`<div data-k="${k}"><span>${C[k].title}</span><b>${C[k].render?C[k].render(r[k],r):esc(r[k])}</b></div>`).join('')}<div data-k="mode"><span>运输方式</span><b>${c.mode}</b></div></div></div>`;
+  const msgs=evs.filter(e=>e.source_type==='chat').map(e=>`<div class="xm"><i class="av a3">群</i><p>${esc(EVIDENCE[e.id]||'')}<small title="message_id: ${e.message_id}">${esc(e.chat_group_name)} · ${fmtT(e.message_at)} PT · ${e.id} ${STATUS_CN[e.status]}</small></p></div>`).join('')+
+    (f?`<div class="xm aim"><i class="av a1">AI</i><p>催办草稿（${f.approved_at?'已人工确认 · 样张未真发':'未发送'}）<small>${fmtT(f.created_at)} PT · ${f.to_supplier}</small></p></div>`+(f.reply?`<div class="xm"><i class="av a4">供</i><p>${esc(f.reply)}<small>${f.to_supplier} · ${fmtT(f.replied_at)} PT</small></p></div>`:''):'');
+  const nodes=r.ns.map(n=>`<span class="xn s2-${n.st}" data-node="${n.i}" data-tip="${esc(n.tip)} · 点开录入"><i class="s-${n.st}"></i>${n.name}<em>${n.t||'—'}</em></span>`).join('');
+  return `<div class="xfold${FULL?' full':''}" data-cn="${c.cn}">${cols}
+   <div class="xsec"><div class="xh">${IC.chat}工单 · 聊天<span>工单 0 · 消息 ${evs.filter(e=>e.source_type==='chat').length}</span></div><div class="xms">${msgs||'<p class="faint">该柜暂无聊天</p>'}</div>
+    <div class="xbt"><button class="btn sm" data-tool="ticket">${IC.plus}新建工单</button><button class="btn sm" data-tool="mail">${IC.chat}起草回复</button><span class="faint">示意 · 不发送</span></div></div>
+   <div class="xsec"><div class="xh">${IC.spark}AI 输入<span>只生成待确认建议，不直接改数据</span></div>
+    <div class="xin"><input class="xai-in" data-cn="${c.cn}" placeholder="让 AI 改这个柜，如“派送日改为 10/22”" autocomplete="off"><button class="btn sm pri" data-act="xai" data-cn="${c.cn}">${IC.send}发送</button></div>
+    <div class="xnodes">${nodes}</div><div class="xout" id="xout-${c.cn}"></div></div></div>`}
+const XAI_LOG=[];
+/* ---------- 左栏列表 ---------- */
+function evItem(e){const c=CT[e.container_no],cf=isConflict(e),ex=isEx(e),node=NODE_OF[e.field_key]??c.node,open=OPEN===e.id;
+  const sq=ex?'r':cf?'o':NODE_SQ[node], pend=e.status==='pending';
+  const what=`${FIELD_LABEL[e.field_key]||e.field_key} → ${esc(fmtVal(e.field_value))}`+(cf?` <em>· 计划 ${esc(c.plan[e.field_key])}，冲突</em>`:ex?' <em>· AI 拿不准</em>':!pend?` <em>· ${STATUS_CN[e.status]}</em>`:'');
+  const col=e.ai_confidence<EX_BELOW?'var(--red)':e.ai_confidence<.9?'#C2560F':'';
+  let det='';if(open){const rows=[[FIELD_LABEL[e.field_key],`<span class="v ${pend?'aiv':''} ${FIELD_TYPE[e.field_key]?'num':''}">${esc(fmtVal(e.field_value))}</span>${pend?'<i class="ai">AI</i>':''}`]];
+    if(cf)rows.push(['计划值',`<span class="v plan">${esc(c.plan[e.field_key])}</span><span class="pill o" style="margin-left:auto">计划≠实际</span>`]);
+    else rows.push(['当前值',`<span class="v faint">${esc(fmtVal(pend?(c.fields[e.field_key]??null):e.prev_value))}</span>`]);
+    rows.push(['事件 · 状态',`<span class="v"><code>${e.id}</code> · ${STATUS_CN[e.status]}${e.superseded_by?` → ${e.superseded_by}`:''}${e.confirmed_by?` · ${esc(e.confirmed_by)} ${fmtT(e.confirmed_at)}`:''}</span>`]);
+    det=`<div class="det"><div class="kv">${rows.map(r=>`<div class="row"><span>${r[0]}</span><span>${r[1]}</span></div>`).join('')}</div>
+     <div class="src">${e.source_type==='chat'?IC.chat:IC.file}<span>来源：${srcHTML(e)}</span></div>
+     <div class="acts"><span class="q">${IC.chat}聊天</span><span class="q">${IC.file}BOL</span><span class="q">${IC.file}DO</span><span class="sp3"></span>${pend?`<button class="btn sm" data-act="edit" data-ev="${e.id}">修改</button><button class="btn sm pri" data-act="ok" data-ev="${e.id}">${IC.check}确认</button>`:''}</div></div>`}
+  return `<div class="it ev${open?' open':''}${ex?' hold':''}" data-ev="${e.id}" data-cn="${c.cn}" data-st="${e.status}"><div class="li"><span class="c"><span class="isq xs ${sq}">${IC[NODE_IC[node]]}</span><span class="cn">${c.cn}</span></span><span class="what">${what}</span><span class="r num" ${col?`style="color:${col}"`:''}>${pct(e.ai_confidence)}</span>${IC.chev}</div>${det}</div>`}
+function fuItem(f){const c=CT[f.container_no],od=overdueOf(c),open=OPEN===f.id,h=od?od.h:null;
+  const stx=f.status==='draft'?'<span class="pill r">草稿 · 待你确认发送</span>':f.status==='approved'?'<span class="pill o">已人工确认（样张未真发）· 等回复</span>':f.status==='replied'?'<span class="pill o">已回复 · 待你确认</span>':'<span class="pill b">已回复 · 已解决</span>';
+  let det='';if(open){const cross=EV[f.based_on];
+    det=`<div class="det"><div class="kv">
+     <div class="row"><span>过境时间</span><span><span class="v num">${fmtT(cross.field_value)} PT</span><span class="faint" style="margin-left:6px">${cross.id}</span></span></div>
+     <div class="row"><span>超时</span><span><span class="v ${od?'red':''}">${od?`已 ${h} 小时未发车（>${OVERDUE_H}h 自动进队列）`:'已发车，出队列'}</span></span></div>
+     <div class="row"><span>催办对象</span><span><span class="v">${f.to_supplier}</span><span class="faint" style="margin-left:6px">${SUPPLIERS[f.to_supplier]}（示例）</span></span></div>
+     <div class="row"><span>状态</span><span>${stx}</span></div></div>
+     <div class="draft"><div class="dh">${IC.bot}<b>AI 起草的催办消息</b><span>只显示草稿 · 发送须人工确认 · 样张不会真发</span></div><p class="dtx">${esc(f.draft)}</p>
+      ${f.reply?`<div class="rpl"><b>${IC.chat}${f.to_supplier} 回复 · ${fmtT(f.replied_at)}</b><p>${esc(f.reply)}</p><small>AI 已生成 ${f.reply_event_ids.map(id=>`${id}（${STATUS_CN[EV[id].status]}${EV[id].confirmed_by==='AI 自动保存'?' · 自动保存':''}）`).join('、')}</small></div>`:''}</div>
+     <div class="acts"><button class="btn sm" data-act="fu-copy" data-fu="${f.id}">${IC.copy}复制草稿</button><button class="btn sm pri" data-act="fu-send" data-fu="${f.id}" ${f.approved_at?'disabled':''}>${IC.check}${f.approved_at?'已人工确认':'人工确认发送'}</button><span class="sp3"></span>
+      <button class="btn sm" data-act="fu-r1" data-fu="${f.id}" ${!f.approved_at||f.reply?'disabled':''} title="模拟读到供应商的明确回复">模拟回复·明确</button><button class="btn sm" data-act="fu-r2" data-fu="${f.id}" ${!f.approved_at||f.reply?'disabled':''} title="模拟读到供应商的含糊回复">模拟回复·含糊</button></div></div>`}
+  return `<div class="it fu${open?' open':''}${f.status==='closed'?'':' hold'}" data-fu="${f.id}" data-cn="${c.cn}"><div class="li"><span class="c"><span class="isq xs ${f.status==='closed'?'g':'r'}">${IC.clock}</span><span class="cn">${c.cn}</span></span><span class="what">${od?`过境 ${h} 小时未发车`:'已发车'} <em>· 催 ${f.to_supplier} · ${f.status==='draft'?'草稿待发':f.status==='closed'?'已解决':'已发待回'}</em></span><span class="r num" style="color:${od?'var(--red)':'var(--faint)'}">${od?h+'h':'—'}</span>${IC.chev}</div>${det}</div>`}
+function remItem(e){const c=CT[e.container_no];const d=e.field_value.slice(0,10);const rel=Math.round((Date.parse(d+'T00:00:00-07:00')-Date.parse(TODAY+'T00:00:00-07:00'))/864e5);
+  return `<div class="it rem" data-cn="${c.cn}" data-ev="${e.id}"><div class="li"><span class="c"><span class="isq xs y">${IC.clock}</span><span class="cn">${c.cn}</span></span><span class="what">${FIELD_LABEL[e.field_key]} ${fmtVal(e.field_value)} <em>· ${rel===1?'明天':rel+' 天后'} · ${STATUS_CN[e.status]}</em></span><span class="r num faint">${pct(e.ai_confidence)}</span>${IC.chev}</div></div>`}
+function sortPend(a,b){return (isConflict(b)-isConflict(a))||(b.ai_confidence-a.ai_confidence)}
+function renderSide(K){
+  $('#sh-auto').innerHTML=`AI 今日已自动录入 <b>${K.autoToday.length}</b> 条${DEMO}`;
+  const tabs=[['pend','待确认',K.pend.length],['ex','异常',K.ex.length],['fu','催办',K.fuOpen.length],['hold','财控',K.hold],['rem','提醒',K.remind.length],['done','今日已录入',K.confirmed.length]];
+  $('#side-tabs').innerHTML=tabs.map(t=>`<span class="tab${TAB===t[0]?' on':''}" data-tab="${t[0]}">${t[1]} <b>(${t[2]})</b></span>`).join('');
+  let h='';
+  if(TAB==='pend')h=K.pend.slice().sort(sortPend).map(evItem).join('')||empty('没有待你确认的事件');
+  if(TAB==='ex')h=K.ex.map(evItem).join('')||empty('没有 AI 拿不准的事件');
+  if(TAB==='fu')h=FOLLOWUPS.slice().sort((a,b)=>(a.status==='closed')-(b.status==='closed')).map(fuItem).join('')||empty('今天没有超时的柜');
+  if(TAB==='hold')h=empty('示例数据里没有财控暂停的柜');
+  if(TAB==='rem')h=K.remind.map(remItem).join('')||empty('48 小时内没有计划节点');
+  if(TAB==='done')h=K.confirmed.slice().sort((a,b)=>Date.parse(b.confirmed_at)-Date.parse(a.confirmed_at)).map(evItem).join('');
+  const wd=K.autoToday.slice().sort((a,b)=>Date.parse(b.confirmed_at)-Date.parse(a.confirmed_at));
+  h+=`<div class="wdone"><div class="wdh">${IC.check}AI 今天已自动处理 <b>${wd.length}</b> 条 · 不用你管${DEMO}<span>置信 ≥ ${pct(AUTO_SAVE)} 自动保存</span></div>`+
+    wd.slice(0,6).map(e=>`<div class="wd" data-ev="${e.id}"><span class="cn">${e.container_no}</span><span>${FIELD_LABEL[e.field_key]} → ${esc(fmtVal(e.field_value))} · ${srcHTML(e)}</span><em>${fmtHM(e.confirmed_at)}</em></div>`).join('')+'</div>';
+  $('#side-list').innerHTML=h;
+  // AI 小结：全部由数据生成
+  const lastT=NODE_EVENTS.map(e=>e.reported_at||e.message_at).filter(Boolean).sort().pop();
+  const fast=K.pend.filter(e=>e.ai_confidence>=.95);
+  const parts=[];K.fuOpen.forEach(f=>{const od=overdueOf(CT[f.container_no]);if(od)parts.push(`<em>${f.container_no} 过境后 ${od.h} 小时未发车</em>，已进今日催办，${f.approved_at?'已人工确认发送（样张）':'AI 草稿待你确认发送'}`)});
+  K.pend.filter(isConflict).forEach(e=>parts.push(`<u>${e.container_no} 计划到${CT[e.container_no].plan[e.field_key].replace(/.*（(.*)）/,'$1')}、实际到${e.field_value.replace(/.*（(.*)）/,'$1')}</u>，计划与实际冲突待你确认`));
+  const rest=K.pend.filter(e=>!isConflict(e));
+  $('#aisum-t').textContent=`AI 小结 · ${fmtHM(lastT)} PT`;
+  $('#aisum-b').innerHTML=`${parts.length?'最急：'+parts.join('；')+'。':'暂无紧急事项。'}${rest.length?`其余 ${rest.length} 条 AI 置信 ≥${pct(Math.min(...rest.map(e=>e.ai_confidence)))}，核对后可直接确认。`:''}${DEMO}`;
+  const bb=$('#btn-batch');bb.innerHTML=`${IC.check}一键处理 ${fast.length} 条`;bb.disabled=!fast.length;bb.title=`确认置信 ≥95% 的 ${fast.length} 条待确认事件`}
+const empty=t=>`<div class="empty">${t}${DEMO}</div>`;
+/* ---------- 主区 ---------- */
+function nodeVals(c){const live=f=>{const es=evsOf(c.cn).filter(e=>e.field_key===f&&(e.status==='pending'||e.status==='confirmed'));return es[es.length-1]};
+  const V=f=>{const e=live(f);if(!e)return c.fields[f]?`<span class="v">${esc(fmtVal(c.fields[f]))}</span>`:'<span class="v faint">—</span>';
+    return `<span class="v ${e.status==='pending'?'aiv':''}">${esc(fmtVal(e.field_value))}</span>${e.status==='pending'?'<i class="ai">AI</i>':''}`};
+  const ER=window.entryStat?entryStat(c):null;
+  return [[['审核',ER?ER.review:'—'],['单证',ER?ER.rfiles:'—']],[['回执',V('isf_receipt_no')],['完成',V('isf_done_at')]],
+   [['提柜',V('pk_done_at')],['到达',c.plan.arrival_city?V('arrival_city'):`<span class="v">${c.mode}</span>`]],
+   [['监管仓',V('wh_status')],['转柜',V('transload_plan_at')]],
+   [['清关 / 过境',live('border_crossed_at')?V('border_crossed_at'):live('customs_cleared_at')?V('customs_cleared_at'):'<span class="v faint">—</span>'],['发车 / 派送',live('truck_departed_at')?V('truck_departed_at').replace('<span class="v ','<span class="v num ">已发车 · </span><span class="v '):live('dispatch_status')?V('dispatch_status'):live('delivery_plan')?V('delivery_plan'):live('border_status')?V('border_status'):'<span class="v faint">—</span>']]]}
+const NODE_BG=['linear-gradient(#94A3B8,#475569)','linear-gradient(#FB923C,#F2711C)','linear-gradient(#2D6BE0,#0A2A6B)','linear-gradient(#3B4252,#0E1116)','linear-gradient(#7FA6EA,#1F5FD6)'];
+const NODE_T=['订单审核','ISF','转关提柜','仓库拆柜','清关派送'];
+function renderMain(K){const c=CT[SEL],evs=evsOf(c.cn),pend=evs.filter(e=>e.status==='pending'),ex=evs.some(isEx)||!!overdueOf(c),r=rowOf(c);
+  $('#ph-cn').textContent=c.cn;
+  $('#ph-tags').innerHTML=`<span class="tg b">${c.ord}</span><span class="tg">${c.mode}</span><span class="tg hz">${c.code}</span><span class="tg ${ex?'rd':'hz'}">${esc(c.state)}</span>`;
+  $('#ph-mini').innerHTML=`${NSEG(r.ns)}<span class="mk">新单 <b>${K.newToday}</b></span><span class="mk o">待确认 <b>${K.pend.length}</b></span><span class="mk r">异常 <b>${K.exCt.length}</b></span><span class="mk y">LFD <b>${K.lfd}</b></span><span class="mk">示例</span>`;
+  $('#ph-chat').textContent=evs.filter(e=>e.source_type==='chat').length;
+  const kv={new:[K.newToday,'单'],pend:[K.pend.length,'条'],ex:[K.exCt.length,'柜'],lfd:[K.lfd,'柜']};
+  Object.entries(kv).forEach(([k,v])=>{const el=$(`[data-k="${k}"]`);if(el)el.innerHTML=`${v[0]}<small>${v[1]}</small>`});
+  const NV=nodeVals(c),NS=r.ns,PILLS={done:['已完成','gn'],bad:['异常','r'],todo:['未开始','g']};
+  $('#nodes').innerHTML=NV.map((rows,i)=>{const n=NS[i],st=n.st==='cur'?(pend.length?['待确认','o']:['进行中','b']):PILLS[n.st];
+    return `<div class="node${i===c.node?' cur':''}${n.st==='bad'?' exn':''}" data-st="${n.st}" data-node="${i}" title="${esc(n.tip)} · 点开录入" style="--nc:${NODE_BG[i]}" data-chk="node${i+1}"><div class="nh"><span class="isq xs ${NODE_SQ[i]}">${IC[NODE_IC[i]]}</span><span class="no">0${i+1}</span><b>${NODE_T[i]}</b><span class="pill ${st[1]}">${st[0]}</span></div><div class="kv">${rows.map(x=>`<div class="row"><span>${x[0]}</span><span>${x[1]}</span></div>`).join('')}</div></div>`}).join('');
+  $('#xg-count').innerHTML=`${CONTAINERS.length} 柜${DEMO}`;
+  $('#pager-n').textContent=`共 ${CONTAINERS.length} 条（示例）`;
+  const F={rej:K.rejected,eta:NODE_EVENTS.filter(e=>isPend(e)&&/eta|plan/.test(e.field_key)).length,isf:0,aud:0};
+  Object.entries(F).forEach(([k,v])=>{const el=$(`[data-f="${k}"] b`);if(el)el.textContent=v});
+  $('[data-f="mail"]').innerHTML=`催办 已确认 <b>${K.fuSent}</b> · 草稿 <b>${K.fuDraft}</b>`;
+  const chk=CONTAINERS.filter(c=>c.chk);$('#bulk-n').textContent=`已选 ${chk.length} 柜`;
+  // 图标栏徽标/圆点
+  const rb=$('#rail-chat');rb.textContent=K.chat;rb.style.display=K.chat?'':'none';
+  [0,1,2,3].forEach(i=>{const d=$(`#rail-n${i}`);const cs=CONTAINERS.filter(c=>c.node===i+1);const e2=cs.some(c=>evsOf(c.cn).some(isEx)||overdueOf(c)),p=cs.some(c=>evsOf(c.cn).some(isPend));
+    d.className='n'+(e2?' r':'');d.style.display=e2||p?'':'none'});
+  $('#rail-fin').style.display=K.hold?'':'none'}
+/* ---------- 右侧 AI 助手（34 寸） ---------- */
+function chatBlock(c){const evs=evsOf(c.cn);const ch=evs.filter(e=>e.source_type==='chat'),sp=evs.filter(e=>e.source_type==='supplier');const f=FOLLOWUPS.find(x=>x.container_no===c.cn);
+  const msgs=ch.map(e=>`<div class="msg" data-ev="${e.id}"><i class="av a3">群</i><div><p>${esc(EVIDENCE[e.id]||'')}</p><small title="message_id: ${e.message_id}">群：${esc(e.chat_group_name)} · ${fmtT(e.message_at)} PT · AI 读成 ${e.id}</small></div></div>`).join('')+
+   (f?`<div class="msg ai2"><span class="isq xs">${IC.bot}</span><div><p>催办草稿（${f.approved_at?'已人工确认 · 样张未真发':'未发送'}）：${esc(f.draft.slice(0,60))}…</p><small>AI · ${fmtT(f.created_at)} PT</small></div></div>`+(f.reply?`<div class="msg"><i class="av a4">供</i><div><p>${esc(f.reply)}</p><small>${f.to_supplier} · ${fmtT(f.replied_at)} PT</small></div></div>`:''):'');
+  return `<div class="chn"><div class="ct"><span class="on">内部 / 群${ch.length?` <i>${ch.length}</i>`:''}</span><span>客户</span><span>供应商${sp.length?` <i>${sp.length}</i>`:''}</span></div>${msgs||'<div class="msg"><div><p class="faint">该柜暂无聊天消息</p></div></div>'}<div class="cin">${IC.spark}<span>输入消息，@同事，或让 AI 起草…（样张不发送）</span>${IC.send}</div></div>`}
+function auditBlock(){return AUDIT_LOGS.length?`<div class="alist">${AUDIT_LOGS.slice().reverse().map(a=>`<div class="al${a.container_no===SEL?' me':''}" data-al="${a.id}"><b>${a.id}</b><span class="ac ac-${a.action}">${a.action}</span><span>${a.table_name}:${a.record_id} · ${a.container_no||''}</span><span class="vv">${a.field_key?`${a.field_key}: ${esc(fmtVal(a.prev_value))} → ${esc(a.action==='followup_approve'||a.action==='followup_reply'?String(a.field_value).slice(0,24)+'…':fmtVal(a.field_value))}`:''}</span><small>${esc(a.actor)} · ${fmtT(a.created_at)} PT${a.note?' · '+esc(a.note):''}</small></div>`).join('')}</div>`:'<div class="empty">本次打开后还没有操作记录（确认 / 修改 / 驳回 / 作废 / 催办都会写入）</div>'}
+function renderRP(){const c=CT[SEL],evs=evsOf(c.cn),pend=evs.filter(e=>e.status==='pending'),od=overdueOf(c),f=FOLLOWUPS.find(x=>x.container_no===c.cn);
+  $('#rp-cn').textContent=`跟着选中的柜走 · ${c.cn}`;
+  const p=$('#rp-pill');p.className='pill '+(pend.some(isEx)||od?'r':pend.length?'o':'g');p.textContent=pend.length?`待确认 ${pend.length} 项`:od?'超时未发车':'无待办';
+  $('#rp-tabs').innerHTML=[['chk','核对'],['chat',`聊天${evs.filter(e=>e.source_type==='chat').length?` <i>${evs.filter(e=>e.source_type==='chat').length}</i>`:''}`],['file','文件'],['log',`日志 <b class="lc">${AUDIT_LOGS.length}</b>`]].map(t=>`<span class="${RT===t[0]?'on':''}" data-rt="${t[0]}">${t[1]}</span>`).join('');
+  const live=evs.filter(e=>e.origin!=='entry'&&(e.status==='pending'||e.status==='confirmed')); // 节点录入栏在录入面板里确认
+  const minC=pend.length?Math.min(...pend.map(e=>e.ai_confidence)):null;
+  const kv=live.map(e=>`<div class="row" data-ev="${e.id}"><span>${FIELD_LABEL[e.field_key]}</span><span><span class="v ${e.status==='pending'?'aiv':''}">${esc(fmtVal(e.field_value))}</span>${e.status==='pending'?(isEx(e)?'<span class="pill r" style="margin-left:auto">拿不准</span>':'<i class="ai">AI</i>'):`<span class="faint" style="margin-left:auto;font-size:12px">${e.confirmed_by==='AI 自动保存'?'自动保存':'已确认'}</span>`}</span></div>`).join('')+
+    Object.keys(c.plan).filter(k=>pend.some(e=>e.field_key===k&&isConflict(e))).map(k=>`<div class="row"><span>计划${FIELD_LABEL[k].replace('实际','')}</span><span><span class="v plan">${esc(c.plan[k])}</span><span class="pill o" style="margin-left:auto">计划≠实际</span></span></div>`).join('')+
+    (od?`<div class="row"><span>过境后未发车</span><span><span class="v red">${od.h} 小时</span><span class="pill r" style="margin-left:auto">已进今日催办</span></span></div>`:'');
+  const qs=pend.concat(live.filter(e=>e.status==='confirmed')).slice(0,3).map(e=>`<div class="quote"><b>${srcHTML(e)}</b> · ${e.id}<p>“${esc(EVIDENCE[e.id]||'')}”</p></div>`).join('');
+  const adv=[];pend.filter(isConflict).forEach(e=>adv.push(`供应商回传实际到${e.field_value}，与计划${c.plan[e.field_key]}不一致：建议先和客户确认改到实际城市派送，再点确认（确认后 prev_value 记为计划值）。`));
+  if(od)adv.push(`过境已 ${od.h} 小时未发车，已进今日催办；草稿${f&&f.approved_at?'已人工确认（样张未真发）':'待你确认发送'}。`);
+  pend.filter(e=>!isConflict(e)&&!isEx(e)).forEach(e=>adv.push(`${FIELD_LABEL[e.field_key]}与来源一致（置信 ${pct(e.ai_confidence)}），可直接确认。`));
+  pend.filter(isEx).forEach(e=>adv.push(`${FIELD_LABEL[e.field_key]}置信 ${pct(e.ai_confidence)} < ${pct(EX_BELOW)}，AI 拿不准，请核实后修改或驳回。`));
+  const FILES=fileBlock(c);const FILES_OLD=`<div class="qk"><span>${IC.file}BOL</span><span>${IC.file}DO</span><span>${IC.file}A/N</span><span>${IC.file}ISF 回执</span><span>${IC.file}CI&amp;PL</span><span>${IC.copy}模板消息</span></div>`;
+  let h='';
+  const RN=rowOf(c).ns,RNH=`<div class="rsec">${IC.order}节点录入<span>点一节打开录入面板</span></div><div class="rpn">${RN.map(n=>`<span class="rpc s2-${n.st}" data-node="${n.i}" data-tip="${esc(n.tip)}"><i class="s-${n.st}"></i>${n.name}${window.entryStat?`<em>${entryStat(c,n.i).short}</em>`:''}</span>`).join('')}</div>`;
+  if(RT==='chk')h=RNH+`<div class="rsec">${IC.check}AI 已填好，请你核对<span>${minC!=null?'置信 '+pct(minC):'无待确认'}</span></div><div class="kv">${kv||'<div class="row"><span>—</span><span class="faint">无事件</span></div>'}</div>
+   <div class="rsec">${IC.file}AI 依据<span>来源时间均为 PT · 原文为示例</span></div>${qs}<div class="quote"><b>AI 建议</b><p>${adv.join('<br>')||'该柜暂无需要你处理的事项。'}</p></div>
+   <div class="rsec">${IC.chat}聊天<span>内部 · 客户 · 供应商</span></div>${chatBlock(c)}
+   <div class="rsec">${IC.file}文件 · 分类<span>点开为示意</span></div>${FILES}
+   <div class="rsec">${IC.order}详情 10 页签</div><div class="dtabs"><span>订单信息</span><span>文件历史</span><span>状态维护</span><span>通知记录</span><span>岗位协同</span><span>物流信息</span><span>保险信息</span><span>费用登记</span><span>操作日志</span><span>GPS轨迹</span></div>`;
+  if(RT==='chat')h=`<div class="rsec">${IC.chat}聊天<span>内部 · 客户 · 供应商</span></div>${chatBlock(c)}`;
+  if(RT==='file')h=`<div class="rsec">${IC.file}文件 · 分类<span>点开为示意</span></div>${FILES}`;
+  if(RT==='log')h=`<div class="rsec">${IC.order}audit_logs<span>本次打开后的操作 · 示例</span></div>${auditBlock()}`;
+  $('#rp-body').innerHTML=h;
+  $('#rp-edit').disabled=!pend.length;$('#rp-ok').disabled=!pend.some(e=>isPend(e)&&e.origin!=='entry')}
+/* ---------- 右栏分类文件区（文件均为示例，状态由事件推导） ---------- */
+function fileCats(c){const ev=f=>evsOf(c.cn).some(e=>e.field_key===f&&e.status==='confirmed'),fu=FOLLOWUPS.find(x=>x.container_no===c.cn);
+  return [['提单 · 放货',[['BOL','—'],['DO','—'],['A/N','—']]],
+   ['报关 · 清关',[['CI&PL','—'],['报关单 Pedimento',ev('customs_cleared_at')?'已收':'—'],['ISF 回执','—']]],
+   ['运输 · 签收',[[c.mode==='火车'?'铁路运单':'卡车运单',ev('border_crossed_at')||ev('arrival_city')||ev('wh_status')?'已收':'—'],['POD 签收单','—'],['GPS / 轨迹',ev('truck_departed_at')?'已收':'—']]],
+   ['往来 · 催办',[['催办草稿',fu?(fu.approved_at?'已确认':'草稿'):'—'],['供应商回复',fu&&fu.reply?'已读入':'—'],['客户通知','—']]]]}
+function fileBlock(c){return `<div class="fcats">${fileCats(c).map(([cat,fs])=>`<div class="fcat"><div class="fch">${cat}<span>${fs.filter(f=>f[1]!=='—').length}/${fs.length}</span></div><div class="fls">${fs.map(([n,s])=>`<span class="fl2${s==='—'?'':' has'}" data-tool="file:${esc(n)}" title="示例文件 · 点开为示意">${IC.file}${esc(n)}<em>${s==='—'?'未收':s}</em></span>`).join('')}</div></div>`).join('')}<div class="fnote">文件均为示例；「已收」由事件推导<i class="demo">示例</i></div></div>`}
+/* ---------- 左右栏收缩：窄图标条 + 计数徽标，状态记在 localStorage ---------- */
+function renderMinis(K){const c=CT[SEL],pend=evsOf(c.cn).filter(e=>e.status==='pending').length;
+  const L=[['pend','待确认',K.pend.length,'o',IC.check],['ex','异常',K.ex.length,'r',IC.alert],['fu','催办',K.fuOpen.length,'r',IC.clock],['rem','提醒',K.remind.length,'y',IC.bell],['done','已录入',K.confirmed.length,'b',IC.file]];
+  $('#smini').innerHTML=`<button class="mtg" data-col="l" title="展开左栏">»</button>`+L.map(x=>`<button class="mi" data-mini="${x[0]}" title="${x[1]} ${x[2]}（点开左栏）"><span class="g">${x[4]}</span>${x[2]?`<i class="nb ${x[3]}">${x[2]}</i>`:''}<small>${x[1]}</small></button>`).join('');
+  const files=fileCats(c).flatMap(x=>x[1]).filter(f=>f[1]!=='—').length,chat=evsOf(c.cn).filter(e=>e.source_type==='chat').length;
+  const R=[['chk','核对',pend,'o',IC.check],['chat','聊天',chat,'r',IC.chat],['file','文件',files,'b',IC.file],['log','日志',AUDIT_LOGS.length,'b',IC.order],['tools','工具',0,'',IC.spark]];
+  $('#rmini').innerHTML=`<button class="mtg" data-col="r" title="展开右栏">«</button>`+R.map(x=>`<button class="mi" data-rmini="${x[0]}" title="${x[1]} ${x[2]||''}（点开右栏）"><span class="g">${x[4]}</span>${x[2]?`<i class="nb ${x[3]}">${x[2]}</i>`:''}<small>${x[1]}</small></button>`).join('')}
+function applyCollapse(){document.body.classList.toggle('lcol',LC);document.body.classList.toggle('rcol',RC);
+  const lb=$('#lc-btn'),rb=$('#rc-btn');if(lb)lb.title='收起左栏';if(rb)rb.title='收起右栏'}
+function setCol(side,v){if(side==='l'){LC=v;LSS('r1e:lc',v?'1':'0')}else{RC=v;LSS('r1e:rc',v?'1':'0')}applyCollapse();render()}
+Object.assign(window.R1E,{setCol,get EXP(){return EXP},XAI_LOG});
+/* ---------- 汇总渲染 ---------- */
+function render(){const K=counts();renderMinis(K);renderSide(K);renderMain(K);renderRP();renderGrid();if(window.renderEntry)renderEntry();const ap=$('#audit-pop');if(ap&&ap.classList.contains('on'))$('#audit-body').innerHTML=auditBlock();$('#audit-n').textContent=AUDIT_LOGS.length}
+window.R1E.render=render;
+function select(cn){if(!CT[cn])return;SEL=cn;render()}
+/* ---------- 修改弹窗 ---------- */
+function openEdit(id){const e=EV[id];if(!e||e.status!=='pending')return;const m=$('#edit-modal');m.dataset.ev=id;
+  $('#em-t').textContent=`修改 · ${e.container_no} · ${FIELD_LABEL[e.field_key]}`;
+  $('#em-ai').innerHTML=`AI 读到：<b>${esc(e.field_value)}</b>（${pct(e.ai_confidence)}）· 来源 ${srcHTML(e)}`;
+  const ty=FIELD_TYPE[e.field_key];$('#em-hint').textContent=ty==='date'?'格式：YYYY-MM-DD（ISO 8601）':ty==='datetime'?'格式：YYYY-MM-DDTHH:mm:ss-07:00（ISO 8601）':ty==='interval'?'格式：YYYY-MM-DD/YYYY-MM-DD（ISO 8601 区间）':'文本';
+  $('#em-v').value=e.field_value;$('#em-note').value='';$('#em-err').textContent='';m.classList.add('on');$('#em-v').focus()}
+function validVal(f,v){const ty=FIELD_TYPE[f];if(!v.trim())return false;if(ty==='date')return ISO_D.test(v);if(ty==='datetime')return ISO_DT.test(v);if(ty==='interval')return ISO_I.test(v);return true}
+function closeEdit(){$('#edit-modal').classList.remove('on')}
+let tt;function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('on'),2600)}
+/* ---------- 右栏快捷工具：只做示意，不发送、不改外部 ---------- */
+const TOOL_LOG=[];window.R1E.TOOL_LOG=TOOL_LOG;
+function runTool(k){const c=CT[SEL];let msg;
+  if(k==='bol')msg=`将把 ${c.cn} 的 BOL 发给客户（示意，未发送）`;
+  if(k==='do')msg=`将把 ${c.cn} 的 DO 发给 ${c.mode==='卡车'?'TRK-B02':'RAIL-A01'}（示意，未发送）`;
+  if(k==='up')msg=`将打开上传窗口，文件归到 ${c.cn} 文件历史（示意，未上传）`;
+  if(k==='mail'){const p=evsOf(c.cn).filter(e=>e.status!=='superseded'&&e.status!=='rejected').map(e=>`${FIELD_LABEL[e.field_key]}：${fmtVal(e.field_value)}`).join('；');msg=`邮件草稿（未发送）：「${c.cn} 最新进度：${c.state}。${p}」`}
+  if(k==='print')msg=`将打印 ${c.cn} 柜单（示意，未调用打印）`;
+  if(k==='xls')msg=`将导出 ${CONTAINERS.length} 柜 × 16 列为 Excel（示意，未生成文件）`;
+  if(k==='fu'){const f=FOLLOWUPS.find(x=>x.container_no===c.cn);if(f){TAB='fu';OPEN=f.id;render();msg=`已打开 ${c.cn} 的催办草稿，发送仍需人工确认`}else msg=`${c.cn} 未超时，不需要催办（示意）`}
+  if(k==='note'){const v=prompt(`给 ${c.cn} 加备注（示意，只存在本页）`,'');if(!v){msg='已取消加备注';}else{c.notes=(c.notes||[]).concat(v);msg=`备注已加在 ${c.cn}（只存本页）：「${v}」（未写入外部系统）`}}
+  if(k==='ticket')msg=`将为 ${c.cn} 新建工单（示意，未创建）`;
+  if(k.startsWith('file:'))msg=`将打开 ${c.cn} 的「${k.slice(5)}」（示例文件，示意）`;
+  if(k==='track')msg=`将查询 ${c.cn} 的${c.mode==='火车'?'铁路':'卡车 GPS'}轨迹（示意，未请求外部接口）`;
+  TOOL_LOG.push({tool:k,cn:c.cn,msg,at:isoNow()});$('#tool-out').innerHTML=`<b>${fmtHM()}</b> · ${esc(msg)}`;toast(msg.slice(0,40))}
+/* ---------- 节点悬停提示（自绘，截图里可见） ---------- */
+function bindTip(){const tp=document.createElement('div');tp.id='ntip';document.body.appendChild(tp);
+  document.addEventListener('mouseover',e=>{const s=e.target.closest('[data-tip]');if(!s){tp.classList.remove('on');return}
+    tp.textContent=s.dataset.tip;tp.className='on t-'+(s.className.match(/s-(\w+)/)||[,''])[1];const b=s.getBoundingClientRect();
+    const nb=(s.closest('.nseg,.prog')||s).getBoundingClientRect();let x=nb.right+10;if(x+tp.offsetWidth>innerWidth-8)x=nb.left-tp.offsetWidth-10;tp.style.left=x+'px';tp.style.top=(b.top+b.height/2-tp.offsetHeight/2)+'px'});}
+/* ---------- 事件绑定 ---------- */
+function bind(){bindTip();
+  const onDocClick=ev=>{const t=ev.target;
+    const nd=t.closest('.nseg [data-node],.prog [data-node],.xn[data-node],#nodes .node[data-node],.rpn [data-node]');
+    if(nd&&window.openEntry){const host=nd.closest('[data-cn]');const cn=host?host.dataset.cn:SEL;ev.stopPropagation();openEntry(cn,+nd.dataset.node);return}
+    const xp=t.closest('[data-xp]');if(xp){const cn=xp.dataset.xp;EXP.has(cn)?EXP.delete(cn):EXP.add(cn);SEL=cn;render();return}
+    const cb2=t.closest('[data-col]');if(cb2){setCol(cb2.dataset.col,cb2.dataset.col==='l'?!LC:!RC);return}
+    const mi=t.closest('[data-mini]');if(mi){TAB=mi.dataset.mini;OPEN=null;setCol('l',false);return}
+    const rmi=t.closest('[data-rmini]');if(rmi){if(rmi.dataset.rmini!=='tools')RT=rmi.dataset.rmini;setCol('r',false);return}
+    const act=t.closest('[data-act]');
+    if(act&&!act.disabled){const a=act.dataset.act,id=act.dataset.ev,fid=act.dataset.fu;ev.stopPropagation();
+      if(a==='ok'){confirmEv(id);render();toast(`${id} 已确认，已写 audit_logs`)}
+      if(a==='edit')openEdit(id);
+      if(a==='fu-copy'){const f=FOLLOWUPS.find(x=>x.id===fid);(navigator.clipboard?navigator.clipboard.writeText(f.draft):Promise.reject()).then(()=>toast('草稿已复制（未发送）'),()=>toast('草稿已选中，可手动复制'))}
+      if(a==='fu-send')fuApprove(fid);
+      if(a==='fu-r1')fuReply(fid,'clear');
+      if(a==='fu-r2')fuReply(fid,'vague');
+      if(a==='xai'){const cn=act.dataset.cn,inp=document.querySelector(`.xai-in[data-cn="${cn}"]`),v=(inp&&inp.value||'').trim();const out=document.getElementById('xout-'+cn);
+        const m=v?`AI 已理解：「${v}」→ 正式版会生成一条待确认事件（示意，未改数据、未发送）`:'请先输入要 AI 做的事';XAI_LOG.push({cn,v,at:isoNow()});if(out)out.textContent=m;toast(m.slice(0,30))}
+      return}
+    const tl=t.closest('[data-tool]');if(tl){runTool(tl.dataset.tool);return}
+    const tab=t.closest('#side-tabs [data-tab]');if(tab){TAB=tab.dataset.tab;OPEN=null;render();return}
+    const rt=t.closest('#rp-tabs [data-rt]');if(rt){RT=rt.dataset.rt;renderRP();return}
+    const li=t.closest('#side-list .li');if(li){const it=li.parentNode,k=it.dataset.fu||it.dataset.ev;
+      if(!it.classList.contains('rem'))OPEN=OPEN===k?null:k;select(it.dataset.cn);return}
+    const wd=t.closest('#side-list .wd');if(wd){select(EV[wd.dataset.ev].container_no);return}
+    const cb=t.closest('#g1 tbody input[type=checkbox]');if(cb){const tr=cb.closest('tr');CT[tr.dataset.cn].chk=cb.checked?1:0;render();return}
+    const hc=t.closest('#g1 thead input.hc');if(hc){CONTAINERS.forEach(c=>c.chk=hc.checked?1:0);render();$('#g1 thead input.hc').checked=hc.checked;return}
+    const tr=t.closest('#g1 tbody tr');if(tr&&!t.closest('td[contenteditable=true]')){if(tr.dataset.cn!==SEL)select(tr.dataset.cn);return}
+  };document.addEventListener('click',onDocClick);
+  const wr=$('#g1 .xg-wrap');wr.addEventListener('click',e=>{if(e.target.closest('.xrow')){e.stopPropagation();onDocClick(e)}},true);
+  wr.addEventListener('dblclick',e=>{if(e.target.closest('.xrow'))e.stopPropagation()},true);
+  wr.addEventListener('keydown',e=>{if(e.target.classList.contains('xai-in')&&e.key==='Enter'){e.preventDefault();const b=e.target.parentNode.querySelector('[data-act=xai]');b&&b.click()}});
+  $('#col-mode').onclick=()=>{FULL=!FULL;LSS('r1e:full',FULL?'1':'0');render()};
+  $('#btn-batch').onclick=()=>{const ids=counts().pend.filter(e=>e.ai_confidence>=.95).map(e=>e.id);ids.forEach(id=>confirmEv(id,null,ME,'一键处理（置信 ≥95%）'));render();toast(`一键确认 ${ids.length} 条`)};
+  $('#bulk-ok').onclick=()=>{const cs=CONTAINERS.filter(c=>c.chk).map(c=>c.cn);const ids=NODE_EVENTS.filter(e=>cs.includes(e.container_no)&&isPend(e)&&e.origin!=='entry').map(e=>e.id);
+    ids.forEach(id=>confirmEv(id,null,ME,'批量确认'));render();toast(`批量确认 ${ids.length} 条（${cs.length} 柜）· 拿不准的不在批量里`)};
+  $('#rp-ok').onclick=()=>{const ids=evsOf(SEL).filter(e=>isPend(e)&&e.origin!=='entry').map(e=>e.id);ids.forEach(id=>confirmEv(id));render();toast(`已确认 ${ids.length} 条 · 客户通知草稿已生成（样张不发送）`)};
+  $('#rp-edit').onclick=()=>{const e=evsOf(SEL).find(e=>e.status==='pending');if(e)openEdit(e.id)};
+  $('#em-ok').onclick=()=>{const id=$('#edit-modal').dataset.ev,e=EV[id],v=$('#em-v').value.trim();if(!validVal(e.field_key,v)){$('#em-err').textContent='格式不对：'+$('#em-hint').textContent;return}
+    confirmEv(id,v,ME,$('#em-note').value.trim());closeEdit();render();toast(`${id} 已修改并确认`)};
+  $('#em-rej').onclick=()=>{const id=$('#edit-modal').dataset.ev;rejectEv(id,$('#em-note').value.trim()||'人工驳回');closeEdit();render();toast(`${id} 已驳回（不写回字段）`)};
+  $('#em-x').onclick=closeEdit;$('#em-cancel').onclick=closeEdit;
+  $('#edit-modal').addEventListener('keydown',k=>{if(k.key==='Escape')closeEdit();if(k.key==='Enter'&&k.target.id==='em-v')$('#em-ok').click()});
+  $('#audit-btn').onclick=()=>{const p=$('#audit-pop');p.classList.toggle('on');$('#audit-body').innerHTML=auditBlock()};
+  $('#audit-x').onclick=()=>$('#audit-pop').classList.remove('on');
+  const clk=()=>{const el=$('.me2 small');if(el)el.textContent=`客服 · LA ${fmtHM()} PT`};clk();setInterval(clk,15000);
+  setInterval(()=>{if(!$('#edit-modal').classList.contains('on'))renderSide(counts())},60000);
+}
+window.initGrid=function(){applyCollapse();buildFollowups();const K=counts();const first=K.pend.slice().sort(sortPend)[0];SEL=first?first.container_no:CONTAINERS[0].cn;OPEN=first?first.id:null;bind();render()};
+})();
+
+/* ===== 节点录入面板：AI 预填 → 人只确认 / 修改 / 驳回；门闩齐了才能「完成本节」 ===== */
+(function(){
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const R=window.R1E, ME='夏玮', isoNow=R.isoNow, nodeStates=c=>R.nodeStates(c);
+let NE=null; // {cn,i,showAuto,showDone,showLater,focus}
+const live=(cn,k)=>{const es=NODE_EVENTS.filter(e=>e.container_no===cn&&e.field_key===k&&(e.status==='pending'||e.status==='confirmed'));return es[es.length-1]||null};
+const nodeFields=i=>ENTRY_NODES[i].groups.flatMap(g=>g.f.map(x=>EF[x[0]])).concat((ENTRY_NODES[i].extra||[]).map(k=>EF[k]));
+const gateFields=i=>new Set((ENTRY_NODES[i].gates||[]).flatMap(g=>g[3]));
+const wasRej=(cn,k)=>NODE_EVENTS.some(e=>e.container_no===cn&&e.field_key===k&&e.status==='rejected');
+function fieldState(cn,f){const e=live(cn,f.k);
+  if(!e)return {st:f.opt?'na':'miss',e:null};
+  if(e.status==='pending')return {st:e.ai_confidence<EX_BELOW?'ex':'pend',e};
+  return {st:e.confirmed_by==='AI 自动保存'?'auto':'conf',e}}
+function fileOK(cn,i,s){return !!(ENTRY_FILES[cn]&&ENTRY_FILES[cn][i]&&ENTRY_FILES[cn][i][s])}
+function gateState(cn,i){const n=ENTRY_NODES[i];
+  if(n.review)return n.groups.map((g,j)=>{const fs=g.f.map(x=>EF[x[0]]);const ok=fs.every(f=>{const s=fieldState(cn,f).st;return s==='auto'||s==='conf'});
+    return {id:'R'+(j+1),l:`${g.t} 已通过`,ok,miss:fs.filter(f=>!['auto','conf'].includes(fieldState(cn,f).st)).map(f=>f.l),status:'审核通过'}});
+  return (n.gates||[]).map(([id,l,status,need])=>{const miss=need.filter(k=>k.startsWith('file:')?!fileOK(cn,i,k.slice(5)):!['auto','conf'].includes(fieldState(cn,EF[k]).st));
+    return {id,l,ok:!miss.length,miss:miss.map(k=>k.startsWith('file:')?k.slice(5)+'（文件）':EF[k].l),need,status}})}
+window.entryGates=gateState;
+window.entryStat=function(c,i){if(i==null){const g=gateState(c.cn,0);const n=g.filter(x=>x.ok).length;
+    return {review:`<span class="v">${n} / 4 组</span>`,rfiles:'<span class="v">已审</span>'}}
+  const fs=nodeFields(i).filter(f=>!f.extra);const st=fs.map(f=>fieldState(c.cn,f).st);const g=gateState(c.cn,i);
+  return {done:st.filter(s=>s==='auto'||s==='conf').length,total:fs.length,gates:g.filter(x=>x.ok).length,gtotal:g.length,short:`${g.filter(x=>x.ok).length}/${g.length}`}};
+/* ---------- 写操作（全部走 node_events + audit_logs） ---------- */
+function normVal(f,v){v=String(v).trim();const y='2026-';
+  if(f.t==='date'){let m=v.match(/^(\d{1,2})\/(\d{1,2})$/);if(m)return y+m[1].padStart(2,'0')+'-'+m[2].padStart(2,'0')}
+  if(f.t==='datetime'){let m=v.match(/^(\d{1,2})\/(\d{1,2})\s+(\d{1,2}):(\d{2})$/);if(m)return `${y}${m[1].padStart(2,'0')}-${m[2].padStart(2,'0')}T${m[3].padStart(2,'0')}:${m[4]}:00-07:00`;
+    m=v.match(/^(\d{4}-\d{2}-\d{2})[ T](\d{2}):(\d{2})$/);if(m)return `${m[1]}T${m[2]}:${m[3]}:00-07:00`}
+  if(f.t==='interval'){let m=v.match(/^(\d{1,2})\/(\d{1,2})\s*[-–~]\s*(\d{1,2})\/(\d{1,2})$/);if(m)return `${y}${m[1].padStart(2,'0')}-${m[2].padStart(2,'0')}/${y}${m[3].padStart(2,'0')}-${m[4].padStart(2,'0')}`}
+  return v}
+function validFor(f,v){if(!v)return false;if(f.t==='date')return ISO_D.test(v);if(f.t==='datetime')return ISO_DT.test(v);if(f.t==='interval')return ISO_I.test(v);if(f.t==='num')return /^-?\d+(\.\d+)?$/.test(v);return true}
+function newEvent(cn,f,v,o){const c=CT[cn];const e=Object.assign({id:'M'+String(NODE_EVENTS.filter(x=>x.id[0]==='M').length+1).padStart(3,'0'),container_no:cn,node_key:ENTRY_NODES[f.node].key,field_key:f.k,field_value:v,prev_value:c.fields[f.k]??null,
+  source_type:'manual',supplier_code:null,reported_at:null,chat_group_name:null,message_id:null,message_at:null,ai_confidence:1,status:'pending',superseded_by:null,confirmed_by:null,confirmed_at:null,origin:'entry'},o);
+  NODE_EVENTS.push(e);EV[e.id]=e;return e}
+function doConfirm(cn,f,raw){const st=fieldState(cn,f);const v=raw==null?null:normVal(f,raw);
+  if(v!=null&&!validFor(f,v))return `格式不对：${f.t==='date'?'MM/DD 或 YYYY-MM-DD':f.t==='datetime'?'MM/DD HH:mm':f.t==='interval'?'MM/DD–MM/DD':f.t==='num'?'数字':''}`;
+  if(st.e&&st.e.status==='pending'){R.confirmEv(st.e.id,v!=null&&v!==st.e.field_value?v:null,ME,'录入面板');return null}
+  if(!st.e||st.e.status==='confirmed'){if(v==null||v==='')return '请先填值';if(st.e&&v===st.e.field_value)return null;
+    const e=newEvent(cn,f,v,{note:'人工录入'});R.confirmEv(e.id,null,ME,'录入面板 · 人工录入');return null}
+  return null}
+function doReject(cn,f){const st=fieldState(cn,f);if(st.e&&st.e.status==='pending')R.rejectEv(st.e.id,'录入面板驳回')}
+function doRevoke(cn,f){const st=fieldState(cn,f);const e=st.e;if(!e||st.st!=='auto')return;const c=CT[cn];
+  e.status='rejected';c.fields[f.k]=e.prev_value;R.audit({record_id:e.id,container_no:cn,action:'revoke_auto',field_key:f.k,prev_value:e.field_value,field_value:e.prev_value,status:'rejected',ai_value:e.field_value,source_type:e.source_type,note:'撤回 AI 自动录入（回到待填）'})}
+function confirmAll(cn,i){const ids=nodeFields(i).map(f=>fieldState(cn,f)).filter(s=>s.st==='pend').map(s=>s.e.id);ids.forEach(id=>R.confirmEv(id,null,ME,'录入面板 · 全部确认'));return ids.length}
+function completeNode(cn,i){confirmAll(cn,i);const g=gateState(cn,i);if(g.some(x=>!x.ok))return false;const c=CT[cn],n=ENTRY_NODES[i];
+  const e=newEvent(cn,{k:'node_done_'+n.key,node:i},isoNow(),{note:'本节完成'});R.confirmEv(e.id,null,ME,'全部确认并完成本节');
+  if(c.node===i)c.node=Math.min(i+1,ENTRY_NODES.length);
+  R.audit({table_name:'containers',record_id:cn,container_no:cn,action:'node_complete',field_key:'node',prev_value:n.name,field_value:ENTRY_NODES[i+1]?ENTRY_NODES[i+1].name:'全部完成',status:'confirmed',note:'门闩 '+g.map(x=>x.id).join('、')+' 全部满足'});return true}
+function reviewGroup(cn,j,act){const g=ENTRY_NODES[0].groups[j];const fs=g.f.map(x=>EF[x[0]]);let n=0;
+  fs.forEach(f=>{const s=fieldState(cn,f);if(s.st==='pend'||s.st==='ex'){if(act==='ok'){const inp=$(`.ne-in[data-f="${f.k}"]`);R.confirmEv(s.e.id,inp&&inp.value!==s.e.field_value?normVal(f,inp.value):null,ME,'审核 · '+g.t+' 通过');n++}else{R.rejectEv(s.e.id,'审核 · '+g.t+' 驳回');n++}}});
+  R.audit({table_name:'review_groups',record_id:cn+':'+g.k,container_no:cn,action:act==='ok'?'review_group_pass':'review_group_reject',field_key:g.k,status:act==='ok'?'confirmed':'rejected',note:`${g.t} · ${n} 项`});return n}
+/* 文件拖入：AI 按文件名归类到本节的文件位 */
+const FILE_RULES=[[/pod/i,['提柜 POD','POD-内部']],[/isf/i,['ISF 回执文件']],[/bol/i,['BOL']],[/(^|[^a-z])do([^a-z]|$)/i,['DO 文件']],[/(a[-_ ]?n|arrival)/i,['A/N 文件']],[/t&?e/i,['T&E 文件']],
+  [/(photo|jpe?g|png|照片)/i,['仓库照片（DO/海柜/封箱锁/库内/出仓）']],[/(devan|拆柜)/i,['拆柜单']],[/(receipt|回执)/i,['客户回执文件','签收文件回执','ISF 回执文件']]];
+function attachFiles(cn,i,files){const slots=ENTRY_NODES[i].files||[];const out=[];
+  [...files].forEach(fl=>{let slot=null;for(const [re,cands] of FILE_RULES){if(re.test(fl.name)){slot=cands.find(s=>slots.includes(s));if(slot)break}}
+    if(!slot)slot=slots.find(s=>!fileOK(cn,i,s))||slots[0];if(!slot)return;
+    ENTRY_FILES[cn][i][slot]={name:fl.name,size:fl.size||0,at:isoNow(),by:ME+'（拖入）'};out.push([fl.name,slot]);
+    R.audit({table_name:'files',record_id:cn+':'+slot,container_no:cn,action:'file_attach',field_key:'file:'+slot,field_value:fl.name,status:'confirmed',note:'本地示意，未上传到外部'})});return out}
+/* AI 输入框：「栏位 值」→ 生成一条待确认事件（人再按 Enter 确认） */
+function aiInput(cn,i,txt){txt=txt.trim();if(!txt)return '请输入，如「提柜完成 10/14」';const fs=nodeFields(i).sort((a,b)=>b.l.length-a.l.length);
+  const f=fs.find(f=>txt.includes(f.l));if(!f)return `没找到对应栏位，可说：「${nodeFields(i).find(f=>!f.opt).l} …」`;
+  const v=normVal(f,txt.replace(f.l,'').replace(/^[\s:：改为是=]+/,''));if(!validFor(f,v))return `「${f.l}」的值格式不对`;
+  const old=fieldState(cn,f);if(old.e&&old.e.status==='pending')R.rejectEv(old.e.id,'被 AI 输入框新值取代');
+  const e=newEvent(cn,f,v,{ai_confidence:0.95});EVIDENCE[e.id]='AI 输入框：'+txt;
+  R.audit({record_id:e.id,container_no:cn,action:'ai_input',field_key:f.k,field_value:v,status:'pending',source_type:'manual',note:'AI 输入框生成，待确认'});NE.focus=f.k;return `已生成待确认：${f.l} = ${fmtVal(v)}，按 Enter 确认`}
+/* AI 猜值（零打字）：能从其他事件推出来的给建议 */
+function guess(cn,f){if(f.k==='truck_departed_at'){const d=NODE_EVENTS.find(e=>e.container_no===cn&&e.field_key==='dispatch_status'&&e.field_value==='已发车'&&e.status!=='rejected');if(d)return {v:d.message_at||d.reported_at,why:`${d.id} ${d.source_type==='chat'?'群消息时间':'回传时间'}`,conf:0.72}}
+  if(f.k==='ld_mode')return {v:CT[cn].mode,why:'订单运输方式',conf:0.9};
+  if(f.k==='pk_return_at'){const p=live(cn,'pk_done_at');if(p)return {v:addDays(p.field_value,1),why:'通常提柜次日还柜',conf:0.7}}
+  return null}
+function draftAsk(cn,i,f){const w=WHERE[f.k]||WHERE['file:'+f.l]||['',''];const to=w[1]||'相关供应商';
+  const txt=`${to} 您好：柜号 ${cn} 的「${f.l}」我们还没收到，麻烦回传（${w[0]||'相关单据'}）。谢谢！—— BBTEX ${ME}`;
+  const d={id:'D'+String(ENTRY_DRAFTS.length+1).padStart(2,'0'),cn,node:i,field:f.k,to,txt,at:isoNow(),sent:false};ENTRY_DRAFTS.push(d);
+  R.audit({table_name:'drafts',record_id:d.id,container_no:cn,action:'draft_ask',field_key:f.k,field_value:txt,status:'draft',note:'AI 代起草催问 · 未发送'});return d}
+Object.assign(R,{entry:{gateState,fieldState,confirmAll,completeNode,attachFiles,aiInput,reviewGroup,doRevoke,draftAsk,get NE(){return NE}}});
+/* ---------- 渲染 ---------- */
+const STC={pend:['待确认','o'],ex:['拿不准','r'],miss:['缺失','r'],auto:['AI 已录入','b'],conf:['已确认','gn'],na:['不适用','g'],later:['待发生','g']};
+function row(cn,f,s,i,gf){const e=s.e,pend=s.st==='pend'||s.st==='ex',g=guess(cn,f),w=WHERE[f.k];
+  const val=e?e.field_value:(g?g.v:'');const ph=s.st==='miss'?(g?'':`${f.t==='date'?'MM/DD':f.t==='datetime'?'MM/DD HH:mm':f.t==='interval'?'MM/DD–MM/DD':'填写'}${w?' · 去 '+w[0]+' 抓':''}`):'';
+  const src=e?`${srcHTML(e)} · <b class="cfp ${e.ai_confidence<EX_BELOW?'lo':e.ai_confidence<.9?'mid':''}">${pct(e.ai_confidence)}</b>`:g?`<span class="gs">AI 推断：${esc(g.why)} · <b class="cfp mid">${pct(g.conf)}</b></span>`:'<span class="faint">没有来源</span>';
+  const ro=s.st==='auto'||s.st==='conf';
+  return `<div class="ne-row st-${s.st}${NE.focus===f.k?' fo':''}" data-f="${f.k}">
+   <label for="ne-${f.k}">${esc(f.l)}${gf.has(f.k)?'<i class="gt" title="门闩栏位">门闩</i>':''}${f.extra?'<i class="nx" title="不在旧 71 栏里，R1E 新增">新增</i>':''}</label>
+   <input class="ne-in" id="ne-${f.k}" data-f="${f.k}" value="${esc(ro?fmtVal(val):val)}" placeholder="${esc(ph)}" ${ro?'readonly tabindex="-1"':''} autocomplete="off">
+   <span class="ne-src">${src}</span>
+   <span class="ne-st"><span class="pill ${STC[s.st][1]}">${STC[s.st][0]}</span></span>
+   <span class="ne-act">${pend?`<button class="btn sm" data-ne="rej" data-f="${f.k}" tabindex="-1">驳回</button><button class="btn sm pri" data-ne="ok" data-f="${f.k}" tabindex="-1">${IC.check}确认</button>`
+     :s.st==='miss'?`${w&&w[1]?`<button class="btn sm" data-ne="ask" data-f="${f.k}" tabindex="-1">代起草催问</button>`:''}<button class="btn sm pri" data-ne="ok" data-f="${f.k}" tabindex="-1">${g?'采用并确认':'填好确认'}</button>`
+     :s.st==='auto'?`<button class="btn sm ghost" data-ne="revoke" data-f="${f.k}" tabindex="-1">撤回</button>`:''}</span></div>`}
+function block(title,rows,extra=''){return rows.length?`<div class="ne-g"><div class="ne-gh">${title}${extra}</div>${rows.join('')}</div>`:''}
+function render(){const host=$('#ne');if(!host)return;if(!NE){host.classList.remove('on');host.innerHTML='';return}
+  const {cn,i}=NE,c=CT[cn],n=ENTRY_NODES[i],ns=nodeStates(c),gf=gateFields(i),gates=gateState(cn,i);
+  const steps=`<div class="ne-steps">${ns.map(x=>`<button class="ne-step s2-${x.st}${x.i===i?' on':''}" data-ne-node="${x.i}" title="${esc(x.tip)}"><i class="s-${x.st}"></i><span>${String(x.i+1).padStart(2,'0')} ${x.name}</span></button>`).join('')}</div>`;
+  let left='';const att=[],auto=[],conf=[],later=[];
+  const isCur=i===c.node, done=i<c.node;
+  if(n.review){left=n.groups.map((g,j)=>{const fs=g.f.map(x=>EF[x[0]]);const ss=fs.map(f=>fieldState(cn,f));const gst=gates[j];const pend=ss.filter(s=>s.st==='pend'||s.st==='ex').length;
+      const rows=fs.map((f,k)=>row(cn,f,ss[k],i,new Set()));const showAll=NE.showAuto||pend;
+      return `<div class="ne-g rv${pend?' need':''}" data-rg="${j}"><div class="ne-gh"><b>${String(j+1)}. ${g.t}</b><span class="pill ${gst.ok?'gn':pend?'o':'g'}">${gst.ok?'已通过':pend?`待确认 ${pend} 项`:'未审'}</span>
+        <span class="sp"></span>${pend?`<button class="btn sm rej" data-rv="rej" data-rg="${j}">驳回本组</button><button class="btn sm pri" data-rv="ok" data-rg="${j}">${IC.check}确认本组</button>`:`<span class="faint">${fs.length} 项 · AI 预填已确认</span>`}</div>
+        ${showAll?rows.join(''):`<div class="ne-fold" data-ne="tog-auto">${fs.slice(0,4).map((f,k)=>`${esc(f.l)}：<b>${esc(fmtVal(ss[k].e?ss[k].e.field_value:'—'))}</b>`).join(' · ')} … 展开 ${fs.length} 项</div>`}</div>`}).join('')}
+  else{n.groups.forEach(g=>{const fs=g.f.map(x=>EF[x[0]]);fs.forEach(f=>{const s=fieldState(cn,f);
+      if(s.st==='pend'||s.st==='ex'||(s.st==='miss'&&(gf.has(f.k)||done||wasRej(cn,f.k))))att.push([g,f,s]);else if(s.st==='auto')auto.push([g,f,s]);else if(s.st==='conf')conf.push([g,f,s]);else later.push([g,f,s.st==='miss'?{st:'later',e:null}:s])})});
+    (n.extra||[]).forEach(k=>{const f=EF[k],s=fieldState(cn,f);if(s.st==='pend'||s.st==='ex')att.push([{t:'AI 读到的进度（新增栏）',k:'extra'},f,s]);else if(s.st==='auto')auto.push([{t:'新增栏'},f,s]);else if(s.st==='conf')conf.push([{t:'新增栏'},f,s])});
+    const byG=list=>{const m=new Map();list.forEach(([g,f,s])=>{if(!m.has(g.t))m.set(g.t,[]);m.get(g.t).push(row(cn,f,s,i,gf))});return [...m].map(([t,rs])=>block(t,rs)).join('')};
+    const nPend=att.filter(x=>x[2].st==='pend').length;
+    left=`<div class="ne-sec need"><div class="ne-sh">${IC.alert}<b>需要你看 ${att.length} 项</b><span>待确认 ${nPend} · 拿不准 ${att.filter(x=>x[2].st==='ex').length} · 缺失 ${att.filter(x=>x[2].st==='miss').length}</span>
+        ${nPend?`<button class="btn sm pri" data-ne="all">${IC.check}全部确认（${nPend}）</button>`:''}</div>${att.length?byG(att):`<div class="ne-empty">${IC.check}这一节没有要你看的了${isCur?'，门闩齐就能完成本节':''}</div>`}</div>
+     <div class="ne-sec"><div class="ne-sh fold" data-ne="tog-auto">${IC.bot}<b>AI 已录入 ${auto.length} 项</b><span>置信 ≥ ${pct(AUTO_SAVE)} 直接存 · 可撤回</span><em>${NE.showAuto?'收起 ▴':'展开 ▾'}</em></div>
+       ${NE.showAuto?byG(auto):`<div class="ne-fold" data-ne="tog-auto">${auto.slice(0,6).map(([g,f,s])=>`${esc(f.l)} <b>${esc(fmtVal(s.e.field_value))}</b>`).join(' · ')}${auto.length>6?` … 等 ${auto.length} 项`:''}</div>`}</div>
+     ${conf.length?`<div class="ne-sec"><div class="ne-sh fold" data-ne="tog-done">${IC.check}<b>已确认 ${conf.length} 项</b><span>人工确认 / 录入</span><em>${NE.showDone?'收起 ▴':'展开 ▾'}</em></div>${NE.showDone?byG(conf):''}</div>`:''}
+     ${later.length?`<div class="ne-sec"><div class="ne-sh fold" data-ne="tog-later">${IC.clock}<b>待发生 / 不适用 ${later.length} 项</b><span>到时候 AI 会自动抓，不用现在填</span><em>${NE.showLater?'收起 ▴':'展开 ▾'}</em></div>${NE.showLater?byG(later):''}</div>`:''}`}
+  // 右侧：门闩 / AI 提示 / 文件 / AI 输入
+  const okN=gates.filter(g=>g.ok).length;
+  const gateH=`<div class="ne-box"><div class="ne-bh">${IC.lock}门闩清单<span>${okN} / ${gates.length} 已满足${n.review?'（四组都过才算审核完成）':''}</span></div>
+    ${gates.map(g=>`<div class="gate-i ${g.ok?'ok':'no'}" data-gate="${g.id}"><i>${g.ok?'✓':'✗'}</i><b>${g.id}</b><span>${esc(g.l)}${g.status?` <em>→ ${g.status}</em>`:''}${g.ok?'':`<small>缺：${esc(g.miss.join('、'))}</small>`}</span></div>`).join('')}</div>`;
+  const missF=n.review?[]:nodeFields(i).filter(f=>fieldState(cn,f).st==='miss'&&gf.has(f.k));
+  const missFiles=(n.files||[]).filter(s=>!fileOK(cn,i,s)&&gf.has('file:'+s));
+  const drafts=ENTRY_DRAFTS.filter(d=>d.cn===cn&&d.node===i);
+  const tips=missF.map(f=>{const w=WHERE[f.k],g=guess(cn,f);return `<div class="tip"><b>${esc(f.l)}</b><span>${g?`AI 推断 ${esc(fmtVal(g.v))}（${esc(g.why)}），点「采用并确认」即可`:w?`去 ${esc(w[0])} 抓`:'需要人工补'}</span>${w&&w[1]&&!g?`<button class="btn sm" data-ne="ask" data-f="${f.k}">代起草催问</button>`:''}</div>`}).concat(missFiles.map(s=>{const w=WHERE['file:'+s];return `<div class="tip"><b>${esc(s)}</b><span>${w?'去 '+esc(w[0])+' 抓，或把文件拖进下面':'把文件拖进下面'}</span>${w&&w[1]?`<button class="btn sm" data-ne="ask" data-f="file:${esc(s)}">代起草催问</button>`:''}</div>`}));
+  const tipH=`<div class="ne-box aibx"><div class="ne-bh">${IC.spark}AI 提示<span>缺什么 · 去哪抓 · 代起草</span></div>${tips.join('')||`<div class="tip ok">${n.review?'审核按组确认即可':'门闩栏位都有了'}${done?'（本节已完成）':''}</div>`}
+    ${drafts.map(d=>`<div class="draft2" data-draft="${d.id}"><b>${IC.bot}催问草稿 → ${esc(d.to)}</b><span>只显示 · 未发送</span><p>${esc(d.txt)}</p></div>`).join('')}</div>`;
+  const fl=(n.files||[]);
+  const fileH=fl.length||n.review?`<div class="ne-box"><div class="ne-bh">${IC.file}本节文件<span>${fl.filter(s=>fileOK(cn,i,s)).length} / ${fl.length}</span></div>
+    <div class="fslots">${fl.map(s=>{const x=ENTRY_FILES[cn][i][s];return `<div class="fslot ${x?'has':''}${gf.has('file:'+s)?' gate':''}" data-slot="${esc(s)}">${IC.file}<span>${esc(s)}</span><em>${x?esc(x.name):'未收'}</em></div>`}).join('')}</div>
+    <label class="drop" id="ne-drop" tabindex="0">${IC.up}<span>把文件拖到这里，AI 自动归类到上面的位置</span><small>或点这里选文件 · 本地示意，不上传外部</small><input type="file" id="ne-file" multiple hidden></label></div>`:'';
+  const sug=missF.slice(0,2).map(f=>{const g=guess(cn,f);return `${f.l} ${g?fmtVal(g.v):f.t==='date'?'10/16':f.t==='datetime'?'10/15 14:00':'…'}`});
+  const aiH=`<div class="ne-box"><div class="ne-bh">${IC.spark}AI 输入<span>说一句，AI 填到对应栏（待你确认）</span></div>
+    <div class="ne-ai"><input id="ne-ai" placeholder="如「${esc(sug[0]||(()=>{const f=nodeFields(i).find(f=>f.t==='date')||nodeFields(i)[0];return f.l+(f.t==='date'?' 10/16':' …')})())}」" autocomplete="off"><button class="btn sm pri" data-ne="ai">${IC.send}发送</button></div>
+    <div class="ne-chips">${sug.map(x=>`<span class="chip2" data-ne="chip" data-v="${esc(x)}">${esc(x)}</span>`).join('')}</div><div class="ne-aiout" id="ne-aiout">${esc(NE.aiOut||'')}</div></div>`;
+  const total=nodeFields(i).filter(f=>!f.extra).length,okF=nodeFields(i).filter(f=>!f.extra&&['auto','conf'].includes(fieldState(cn,f).st)).length;
+  const canDone=!done&&isCur&&gates.every(g=>g.ok||(!n.review&&false))&&!nodeFields(i).some(f=>fieldState(cn,f).st==='ex');
+  const pendN=nodeFields(i).filter(f=>fieldState(cn,f).st==='pend').length;
+  const blockMsg=done?'本节已完成':!isCur?`当前在「${ENTRY_NODES[c.node]?ENTRY_NODES[c.node].name:'全部完成'}」，先完成前面的节点`:gates.filter(g=>!g.ok).length?`还差门闩：${gates.filter(g=>!g.ok).map(g=>g.id).join('、')}`:nodeFields(i).some(f=>fieldState(cn,f).st==='ex')?'有拿不准的项，先确认或驳回':'';
+  // 门闩是否「全部确认后」就能满足（待确认也算候选）
+  const willOK=gates.every(g=>g.ok||g.miss.every(m=>{const f=Object.values(EF).find(x=>x.l===m);return f&&fieldState(cn,f).st==='pend'}));
+  const canDone2=!done&&isCur&&willOK&&!nodeFields(i).some(f=>fieldState(cn,f).st==='ex');
+  host.innerHTML=`<div class="ne-h"><span class="isq">${IC[n.ic]}</span><div class="ne-t"><b>${n.name} · 录入</b><small>${cn} · ${c.mode} · ${esc(c.state)}</small></div>${steps}
+     <span class="ne-prog"><b>${okF}</b> / ${total} 栏已录 · 门闩 <b>${okN}</b> / ${gates.length}${n.review?'':' · 旧系统栏位'}</span><button class="ne-x" data-ne="close" title="关闭（Esc）">×</button></div>
+   ${done?`<div class="ne-ban ok">${IC.check}本节已完成（${esc(nodeStates(c)[i].t||'历史')}）${n.review&&gates.some(g=>!g.ok)?' · 有变更待确认，不影响当前进度':''}</div>`:!isCur?`<div class="ne-ban">${IC.clock}本节未开始，AI 已知道要抓哪些栏，到时候自动预填</div>`:''}
+   <div class="ne-b"><div class="ne-l" id="ne-left">${left}</div><div class="ne-r">${gateH}${tipH}${fileH}${aiH}</div></div>
+   <div class="ne-f"><span class="kb"><kbd>Tab</kbd> 下一项 <kbd>Enter</kbd> 确认 / 改完确认 <kbd>Esc</kbd> 关闭</span><span class="sp"></span>
+     ${pendN&&!n.review?`<button class="btn" data-ne="all">${IC.check}全部确认（${pendN}）</button>`:''}
+     <button class="btn pri big" data-ne="done" ${canDone2||(n.review&&isCur&&gates.every(g=>g.ok))?'':'disabled'} title="${esc(blockMsg)}">${IC.check}全部确认并完成本节 →</button>${blockMsg&&!(canDone2)?`<span class="blk">${esc(blockMsg)}</span>`:''}</div>`;
+  host.classList.add('on');
+  if(NE.focus){const el=$(`#ne-${NE.focus}`)||$('.ne-row.st-pend .ne-in,.ne-row.st-ex .ne-in,.ne-row.st-miss .ne-in');if(el&&!el.readOnly){el.focus();el.select&&el.select()}NE.focus=null}}
+window.renderEntry=render;
+function open(cn,i){if(!CT[cn])return;if(R.SELc!==cn)R.select(cn);NE={cn,i,showAuto:false,showDone:false,showLater:false,focus:'__first'};render();
+  const el=$('.ne-row.st-pend .ne-in,.ne-row.st-ex .ne-in,.ne-row.st-miss .ne-in');if(el)el.focus()}
+window.openEntry=open;
+function close(){NE=null;render()}
+function nextFocus(fk){const ins=$$('#ne .ne-in:not([readonly])');const ix=ins.findIndex(x=>x.dataset.f===fk);const nx=ins.slice(ix+1).find(x=>x.dataset.f!==fk);NE.focus=nx?nx.dataset.f:null}
+function act(a,fk,el){const {cn,i}=NE;const f=EF[fk];let msg='';
+  if(a==='ok'){const inp=$(`#ne-${fk}`);nextFocus(fk);const err=doConfirm(cn,f,inp?inp.value:null);if(err){NE.focus=fk;R.toast(err);render();return}msg=`${f.l} 已确认`}
+  if(a==='rej'){nextFocus(fk);doReject(cn,f);msg=`${f.l} 已驳回`}
+  if(a==='revoke'){doRevoke(cn,f);NE.focus=fk;msg=`已撤回 AI 自动录入：${f.l}`}
+  if(a==='ask'){const ff=f||{k:fk,l:fk.slice(5)};draftAsk(cn,i,ff);msg='催问草稿已生成（未发送）'}
+  if(a==='all'){const n=confirmAll(cn,i);msg=`全部确认 ${n} 项`}
+  if(a==='done'){const n=ENTRY_NODES[i];let ok;if(n.review){ok=gateState(cn,0).every(g=>g.ok);if(ok){const c=CT[cn];if(c.node===0)c.node=1;R.audit({table_name:'containers',record_id:cn,container_no:cn,action:'node_complete',field_key:'node',prev_value:n.name,field_value:ENTRY_NODES[1].name,status:'confirmed',note:'审核四组全部通过'})}}else ok=completeNode(cn,i);
+    if(!ok){R.toast('门闩未满足，不能完成本节');R.render();return}msg=`${n.name} 已完成 → 下一节「${ENTRY_NODES[i+1]?ENTRY_NODES[i+1].name:'—'}」`;NE.i=Math.min(i+1,ENTRY_NODES.length-1);NE.focus='__first'}
+  if(a==='tog-auto')NE.showAuto=!NE.showAuto;if(a==='tog-done')NE.showDone=!NE.showDone;if(a==='tog-later')NE.showLater=!NE.showLater;
+  if(a==='ai'){NE.aiOut=aiInput(cn,i,$('#ne-ai').value);msg=NE.aiOut}
+  if(a==='chip'){NE.aiOut=aiInput(cn,i,el.dataset.v);msg=NE.aiOut}
+  if(a==='close'){close();return}
+  R.render();if(msg)R.toast(msg)}
+document.addEventListener('click',ev=>{const t=ev.target;if(!t.closest('#ne'))return;
+  const st=t.closest('[data-ne-node]');if(st){NE.i=+st.dataset.neNode;NE.focus='__first';render();return}
+  const rv=t.closest('[data-rv]');if(rv){const n=reviewGroup(NE.cn,+rv.dataset.rg,rv.dataset.rv);R.render();R.toast(`${ENTRY_NODES[0].groups[+rv.dataset.rg].t} ${rv.dataset.rv==='ok'?'已通过':'已驳回'}（${n} 项）`);return}
+  const b=t.closest('[data-ne]');if(b&&!b.disabled)act(b.dataset.ne,b.dataset.f,b)},true);
+document.addEventListener('keydown',ev=>{if(!NE)return;
+  if(ev.key==='Escape'&&!document.querySelector('#edit-modal.on')){ev.preventDefault();close();return}
+  const t=ev.target;if(ev.key==='Enter'&&t.classList&&t.classList.contains('ne-in')){ev.preventDefault();if(t.readOnly)return;act('ok',t.dataset.f);return}
+  if(ev.key==='Enter'&&t.id==='ne-ai'){ev.preventDefault();act('ai')}});
+document.addEventListener('dragover',ev=>{const d=ev.target.closest&&ev.target.closest('#ne-drop');if(d){ev.preventDefault();d.classList.add('ov')}});
+document.addEventListener('dragleave',ev=>{const d=ev.target.closest&&ev.target.closest('#ne-drop');if(d)d.classList.remove('ov')});
+document.addEventListener('drop',ev=>{const d=ev.target.closest&&ev.target.closest('#ne-drop');if(!d||!NE)return;ev.preventDefault();const out=attachFiles(NE.cn,NE.i,ev.dataTransfer.files);R.render();R.toast(out.length?out.map(x=>`${x[0]} → ${x[1]}`).join('；'):'没识别出文件')});
+document.addEventListener('change',ev=>{if(ev.target.id==='ne-file'&&NE){const out=attachFiles(NE.cn,NE.i,ev.target.files);R.render();R.toast(out.map(x=>`${x[0]} → ${x[1]}`).join('；'))}});
+})();
+
+/* XGrid：冻结表头/首列 · 1px 格线 · 拖动调栏宽 · 一键恢复黄金比例 · 双击编辑 */
+(function(){
+const TIER={main:1.618,normal:1,minor:0.618};
+window.XGrid=function(root,cfg){
+  const key='xg:'+cfg.id; let custom=null; try{custom=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}
+  const wrap=root.querySelector('.xg-wrap'), phi=root.querySelector('.phi');
+  const tbl=document.createElement('table'); wrap.appendChild(tbl);
+  const esc=s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+  function golden(){ // 按等级 1.618 / 1 / 0.618 分配，整数像素，余数补到第一栏，保证总宽=可用宽
+    const avail=cfg.fitW||wrap.clientWidth, sum=cfg.cols.reduce((s,c)=>s+TIER[c.tier],0);
+    const w=cfg.cols.map(c=>Math.floor(avail*TIER[c.tier]/sum)); w[0]+=avail-w.reduce((a,b)=>a+b,0);
+    const mn=cfg.cols.map(c=>c.min||0), sm=mn.reduce((a,b)=>a+b,0);
+    if(sm>avail) return w.map((x,i)=>Math.max(x,mn[i])); // 放不下：按最小宽，横向滚动
+    // 放得下：低于最小宽的补到最小，多出的从其余栏按比例扣回，保证总宽=可用宽、无横向滚动
+    let r=w.map((x,i)=>Math.max(x,mn[i])), ex=r.reduce((a,b)=>a+b,0)-avail;
+    if(ex>0){const room=r.map((x,i)=>x-mn[i]), tr=room.reduce((a,b)=>a+b,0);r=r.map((x,i)=>x-Math.floor(ex*room[i]/tr));r[0]+=avail-r.reduce((a,b)=>a+b,0)}
+    return r }
+  function widths(){const g=golden();return cfg.cols.map((c,i)=>custom&&custom[c.key]?custom[c.key]:g[i])}
+  function apply(){const w=widths();tbl.querySelector('colgroup').innerHTML=w.map(x=>`<col style="width:${x}px">`).join('');
+    tbl.style.width=w.reduce((a,b)=>a+b,0)+'px'; phi&&phi.classList.toggle('on',!!custom)}
+  tbl.innerHTML='<colgroup></colgroup><thead><tr>'+cfg.cols.map((c,i)=>`<th class="${c.num?'num':''}${i==0?' frz':''}" data-i="${i}">${c.th||esc(c.title)}${c.nf?'':'<i class="fl">'+IC.filter+'</i>'}<span class="rz" title="拖动调宽"></span></th>`).join('')+'</tr></thead><tbody>'+
+    cfg.rows.map((r,ri)=>`<tr data-r="${ri}" class="${ri===cfg.sel?'sel':''}${r.chk?' chk':''}${r.hold?' hold':''}">`+cfg.cols.map((c,i)=>{const v=r[c.key];const ai=(r.ai||[]).includes(c.key);
+      return `<td class="${c.num?'num':''}${i==0?' frz cn':''}${ai?' aic':''}" ${ai?'title="AI 填写，待你确认"':''}>${c.render?c.render(v,r):esc(v)}</td>`}).join('')+'</tr>').join('')+'</tbody>';
+  apply(); addEventListener('resize',()=>{if(!custom)apply()});
+  tbl.querySelectorAll('.rz').forEach(h=>h.addEventListener('mousedown',e=>{e.preventDefault();e.stopPropagation();
+    const i=+h.parentNode.dataset.i, x0=e.clientX, w0=widths()[i]; h.classList.add('on');
+    const mv=ev=>{custom=custom||{};custom[cfg.cols[i].key]=Math.max(48,Math.round(w0+ev.clientX-x0));apply()};
+    const up=()=>{h.classList.remove('on');removeEventListener('mousemove',mv);removeEventListener('mouseup',up);localStorage.setItem(key,JSON.stringify(custom))};
+    addEventListener('mousemove',mv);addEventListener('mouseup',up)}));
+  phi&&(phi.onclick=()=>{custom=null;localStorage.removeItem(key);apply()});
+  tbl.addEventListener('click',e=>{const tr=e.target.closest('tbody tr');if(!tr)return;tbl.querySelectorAll('tr.sel').forEach(x=>x.classList.remove('sel'));tr.classList.add('sel')});
+  tbl.addEventListener('dblclick',e=>{const td=e.target.closest('tbody td');if(!td)return;td.contentEditable='true';td.focus();
+    td.onblur=()=>{td.contentEditable='false';td.classList.remove('aic')}; td.onkeydown=k=>{if(k.key==='Enter'){k.preventDefault();td.blur()}}});
+  return {reset:()=>phi.click()};
+};
+})();
+
+</script>
+<script>initGrid()</script>
+</body></html>
